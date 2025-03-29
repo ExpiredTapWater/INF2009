@@ -13,7 +13,7 @@ def setup_porcupine():
 
     # Basic setup
     keywords = ["porcupine", "raspberry pi"]
-    sensitivities = [0.5 , 0.5]  # Sensitivity per keyword
+    sensitivities = [0.8 , 0.8]  # Sensitivity per keyword
     
     # Prepare keywords
     keyword_paths = [
