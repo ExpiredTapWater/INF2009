@@ -56,6 +56,8 @@ def main():
     porcupine, recorder, keywords_formatted = setup_porcupine()
     setup_cheetah()
 
+    print("Running")
+
     try:
         while True:
             pcm = recorder.read()
