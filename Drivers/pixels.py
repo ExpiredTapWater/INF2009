@@ -141,9 +141,10 @@ class Pixels:
         self.dev.set_pixel(index, r, g, b)
         self.dev.show()
 
-    def set_all_pixels(self, r, g, b, brightness=1.0):
+    def set_all_pixels(self, r, g, b, brightness=1.0, duration=None):
         """
-        Set all LEDs to the same color with optional brightness (0.0–1.0)
+        Set all LEDs to the same color with optional brightness (0.0–1.0).
+        If duration is set (in seconds), hold the color, then turn off.
         """
         r = int(r * brightness)
         g = int(g * brightness)
@@ -151,6 +152,10 @@ class Pixels:
         for i in range(self.PIXELS_N):
             self.dev.set_pixel(i, r, g, b)
         self.dev.show()
+
+        if duration:
+            time.sleep(duration)
+            self.off()  # Turn off after duration
 
     def set_pixels(self, color_list, brightness=1.0):
         """

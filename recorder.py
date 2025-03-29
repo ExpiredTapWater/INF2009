@@ -65,6 +65,8 @@ def setup_recorder():
 def setup_LED():
 
     pixels = Pixels()
+    pixels.wakeup()
+    pixels.off()
     print("LED Ready")
 
     return pixels
@@ -121,7 +123,6 @@ def main():
                 print(f"[DEBUG] Detected: '{keywords_formatted[result]}'")
 
                 start_time = time.time()
-                
 
                 while True:
                     frame = recorder.read()
