@@ -66,7 +66,6 @@ def setup_LED():
 
     pixels = Pixels()
     pixels.wakeup()
-    print("LED Ready")
 
     return pixels
 
