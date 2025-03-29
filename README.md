@@ -26,7 +26,8 @@
     - `sudo nano ~/.bashrc`
     - `export PICOVOICE_KEY="enter_api_key_here"`
     - (Optional) Add alias for easier development
-        - Add `alias inf2009='source venv/inf2009/bin/activate'`
+        - Add `alias inf2009='source ~/venv/inf2009/bin/activate'`
         - You can now type `inf2009` to activate the environment
-3. Install PicoVoice libraries
-    - `pip install pvporcupine`
+3. Install PicoVoice libraries (Or use requirements.txt)
+    - `pip install pvporcupine` (Wake word detection)
+    - `pip install pvcobra` (Voice activity detection)
