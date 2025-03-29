@@ -62,8 +62,10 @@ class Pixels:
             func()
 
     def _wakeup(self, direction=0):
+        brightness = 0.05  # Set brightness level (0.0 to 1.0)
+
         for i in range(1, 25):
-            colors = [i * v for v in self.basis]
+            colors = [int(i * v * brightness) for v in self.basis]
             self.write(colors)
             time.sleep(0.01)
 

@@ -115,7 +115,7 @@ def main():
                         final_transcript = cheetah.flush()
                         print(f"\n[Final Transcript] {final_transcript}")
                         print("[OK] Transcription complete")
-                        pixels.think()
+                        pixels.off()
                         break
 
                     # Check for timeout
