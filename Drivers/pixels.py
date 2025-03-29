@@ -35,6 +35,7 @@ class Pixels:
 
     def wakeup(self, direction=0):
         def f():
+            self.basis = [5, 3, 0] * self.PIXELS_N
             self._wakeup(direction)
 
         self.next.set()
@@ -137,11 +138,11 @@ class Pixels:
 
     def _blink(self, color):
         if color == 'red':
-            rgb = [14, 0, 0]
+            rgb = [10, 0, 0]
         elif color == 'green':
-            rgb = [0, 14, 0]
+            rgb = [0, 10, 0]
         else:
-            rgb = [0, 0, 14]  # fallback to blue for unknown color
+            rgb = [0, 0, 10]  # fallback to blue for unknown color
 
         blink_colors = rgb * self.PIXELS_N
         off_colors = [0] * 3 * self.PIXELS_N
