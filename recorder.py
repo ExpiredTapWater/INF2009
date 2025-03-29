@@ -99,12 +99,12 @@ def main():
                     if is_endpoint:
                         final_transcript = cheetah.flush()
                         print(f"\n[Final Transcript] {final_transcript}")
-                        print("[INFO] Transcription complete. Returning to wake word mode.")
+                        print("[OK] Transcription complete")
                         break
 
                     # Check for timeout
-                    if time.time() - start_time > 7:
-                        print("\n[INFO] Transcription timeout. Returning to wake word mode.")
+                    if time.time() - start_time > 10:
+                        print("\n[ERR] Transcription timeout")
                         break
 
     except KeyboardInterrupt:
