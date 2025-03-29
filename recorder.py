@@ -65,6 +65,9 @@ def setup_recorder():
 def setup_LED():
 
     pixels = Pixels()
+
+    # Blink LEDs to show progress
+    pixels.blink_pixels([(0, 255, 0), (0, 255, 0), (0, 255, 0)], brightness=0.03, interval=0.5)
     print("LED Ready")
 
     return pixels
@@ -75,25 +78,17 @@ def main():
 
     # Setup LED
     pixels = setup_LED()
-    
+
     # Get wake-word model instance
     porcupine, keywords_formatted = setup_porcupine()
-    pixels.blink_pixels([(0, 0, 0), (0, 255, 0), (0, 0, 0)], brightness=0.01, interval=0.5)
-    pixels.set_pixel_color(0, 0, 255, 0, brightness=0.01)  # Overrides blinking
-
+    
     # Get speech to text model instance
     cheetah = setup_cheetah()
-    
-    pixels.blink_pixels([(0, 0, 0), (0, 0, 0), (0, 255, 0)], brightness=0.01, interval=0.5)
-    pixels.set_pixel_color(0, 0, 255, 0, brightness=0.01)  # Overrides blinking
-    pixels.set_pixel_color(1, 0, 255, 0, brightness=0.01)  # Overrides blinking
 
     # Setup audio input
     recorder = setup_recorder()
-    pixels.set_pixel_color(0, 0, 255, 0, brightness=0.01)  # Overrides blinking
-    pixels.set_pixel_color(1, 0, 255, 0, brightness=0.01)  # Overrides blinking
-    pixels.set_pixel_color(2, 0, 255, 0, brightness=0.01)  # Overrides blinking
 
+    pixels.set_all_pixels(0, 255, 0, brightness=0.03)
 
     try:
 
