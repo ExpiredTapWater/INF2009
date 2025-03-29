@@ -65,8 +65,7 @@ def setup_recorder():
 def setup_LED():
 
     pixels = Pixels()
-    pixels.wakeup()
-    pixels.off()
+    pixels.speak()
     print("LED Ready")
 
     return pixels
@@ -77,34 +76,17 @@ def main():
     # Setup LED
     pixels = setup_LED()
 
-    # R-R-R
-    pixels.set_pixel_color(0, 255, 0, 0, brightness=0.03)
-    pixels.set_pixel_color(1, 255, 0, 0, brightness=0.03)
-    pixels.set_pixel_color(2, 255, 0, 0, brightness=0.03)
-
     # Get wake-word model instance
     porcupine, keywords_formatted = setup_porcupine()
-
-    # G-R-R
-    pixels.set_pixel_color(0, 0, 255, 0, brightness=0.03)
-    pixels.set_pixel_color(1, 255, 0, 0, brightness=0.03)
-    pixels.set_pixel_color(2, 255, 0, 0, brightness=0.03)
     
     # Get speech to text model instance
     cheetah = setup_cheetah()
 
-    # G-G-R
-    pixels.set_pixel_color(0, 0, 255, 0, brightness=0.03)
-    pixels.set_pixel_color(1, 0, 255, 0, brightness=0.03)
-    pixels.set_pixel_color(2, 255, 0, 0, brightness=0.03)
-
     # Setup audio input
     recorder = setup_recorder()
 
-    # G-G-G
-    pixels.set_pixel_color(0, 0, 255, 0, brightness=0.03)
-    pixels.set_pixel_color(1, 0, 255, 0, brightness=0.03)
-    pixels.set_pixel_color(2, 0, 255, 0, brightness=0.03)
+    # Turn pixels off once ready
+    pixels.off()
 
     try:
 
@@ -139,7 +121,7 @@ def main():
                     # Check for timeout
                     if time.time() - start_time > 10:
                         print("\n[ERR] Transcription timeout")
-                        pixels.set_all_pixels(255, 0, 0, brightness=0.03, duration=3)
+                        pixels.off()
                         break
 
     except KeyboardInterrupt:
