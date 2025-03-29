@@ -1,8 +1,11 @@
 """
 LED light pattern like Google Home
 """
-
-from . import apa102
+try:
+    from . import apa102
+except:
+    import apa102
+    
 import time
 import threading
 try:
