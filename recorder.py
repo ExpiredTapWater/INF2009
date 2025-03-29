@@ -65,7 +65,7 @@ def setup_recorder():
 def setup_LED():
 
     pixels = Pixels()
-    pixels.speak()
+    pixels.wakeup()
     print("LED Ready")
 
     return pixels
