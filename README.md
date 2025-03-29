@@ -20,3 +20,13 @@
     - `aplay -D "plughw:1,0" test.wav` (Playback via 3.5mm)
 
 ### PicoVoice Setup
+1. Setup virtual environment
+    - `python3 -m venv inf2009` (Creates an environement called "inf2009")
+2. Update shell config file:
+    - `sudo nano ~/.bashrc`
+    - `export PICOVOICE_KEY="enter_api_key_here"`
+    - (Optional) Add alias for easier development
+        - Add `alias inf2009='source venv/inf2009/bin/activate'`
+        - You can now type `inf2009` to activate the environment
+3. Install PicoVoice libraries
+    - `pip install pvporcupine`
