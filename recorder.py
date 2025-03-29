@@ -75,26 +75,26 @@ def main():
     # Setup LED
     pixels = setup_LED()
 
-    # O-O-O
-    pixels.set_pixel_color(0, 255, 165, 0, brightness=0.03)
-    pixels.set_pixel_color(1, 255, 165, 0, brightness=0.03)
-    pixels.set_pixel_color(2, 255, 165, 0, brightness=0.03)
+    # R-R-R
+    pixels.set_pixel_color(0, 255, 0, 0, brightness=0.03)
+    pixels.set_pixel_color(1, 255, 0, 0, brightness=0.03)
+    pixels.set_pixel_color(2, 255, 0, 0, brightness=0.03)
 
     # Get wake-word model instance
     porcupine, keywords_formatted = setup_porcupine()
 
-    # G-O-O
+    # G-R-R
     pixels.set_pixel_color(0, 0, 255, 0, brightness=0.03)
-    pixels.set_pixel_color(1, 255, 165, 0, brightness=0.03)
-    pixels.set_pixel_color(2, 255, 165, 0, brightness=0.03)
+    pixels.set_pixel_color(1, 255, 0, 0, brightness=0.03)
+    pixels.set_pixel_color(2, 255, 0, 0, brightness=0.03)
     
     # Get speech to text model instance
     cheetah = setup_cheetah()
 
-    # G-G-O
+    # G-G-R
     pixels.set_pixel_color(0, 0, 255, 0, brightness=0.03)
     pixels.set_pixel_color(1, 0, 255, 0, brightness=0.03)
-    pixels.set_pixel_color(2, 255, 165, 0, brightness=0.03)
+    pixels.set_pixel_color(2, 255, 0, 0, brightness=0.03)
 
     # Setup audio input
     recorder = setup_recorder()
@@ -132,13 +132,13 @@ def main():
                         final_transcript = cheetah.flush()
                         print(f"\n[Final Transcript] {final_transcript}")
                         print("[OK] Transcription complete")
-                        pixels.off()
+                        pixels.think()
                         break
 
                     # Check for timeout
                     if time.time() - start_time > 10:
                         print("\n[ERR] Transcription timeout")
-                        pixels.off()
+                        pixels.set_all_pixels(255, 0, 0, brightness=0.03, duration=3)
                         break
 
     except KeyboardInterrupt:
