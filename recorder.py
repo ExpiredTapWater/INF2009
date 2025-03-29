@@ -75,18 +75,18 @@ def main():
 
     # Setup LED
     pixels = setup_LED()
-    pixels.set_pixel_color(0, 0, 255, 0, brightness=0.1)
+    pixels.set_pixel_color(0, 0, 255, 0, brightness=0.05)
 
     # Get wake-word model instance
     porcupine, keywords_formatted = setup_porcupine()
-    pixels.set_pixel_color(1, 0, 255, 0, brightness=0.1)
+    pixels.set_pixel_color(1, 0, 255, 0, brightness=0.05)
 
     # Get speech to text model instance
     cheetah = setup_cheetah()
 
     # Setup audio input
     recorder = setup_recorder()
-    pixels.set_pixel_color(2, 0, 255, 0, brightness=0.1)
+    pixels.set_pixel_color(2, 0, 255, 0, brightness=0.05)
 
     try:
 
