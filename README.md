@@ -18,3 +18,5 @@
     - `arecord -l` (Check ID, mine is 1)
     - `arecord -D "plughw:1,0" -f S16_LE -r 16000 -d 5 -t wav test.wav` (Record a short audio clip)
     - `aplay -D "plughw:1,0" test.wav` (Playback via 3.5mm)
+
+### PicoVoice Setup
