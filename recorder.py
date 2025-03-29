@@ -1,5 +1,6 @@
 # ----------------- Import Stuff ------------------
 import os
+import time
 import pvporcupine
 from pvcheetah import create
 from pvrecorder import PvRecorder
@@ -84,18 +85,25 @@ def main():
             # If wake word detected
             if result >= 0:
                 print(f"[DEBUG] Detected: '{keywords_formatted[result]}'")
+                print("[INFO] Transcription started...")
 
-                # Start to transcribe text
-                #while True:
-                #    frame = recorder.read()
-                #    partial_transcript, is_endpoint = cheetah.process(frame)
+                start_time = time.time()
+
+                while True:
+                    frame = recorder.read()
+                    partial_transcript, is_endpoint = cheetah.process(frame)
                     #print(partial_transcript, end='', flush=True)
 
-                #    if is_endpoint:
-                #        final_transcript = cheetah.flush()
-                #        print(final_transcript)
-                #        print("Transcription Done, returning to main loop")
-                #        break
+                    if is_endpoint:
+                        final_transcript = cheetah.flush()
+                        print(f"\n[Final Transcript] {final_transcript}")
+                        print("[INFO] Transcription complete. Returning to wake word mode.")
+                        break
+
+                    # Check for timeout
+                    if time.time() - start_time > 10:
+                        print("\n[INFO] Transcription timeout. Returning to wake word mode.")
+                        break
 
     except KeyboardInterrupt:
         print("Stopping...")
