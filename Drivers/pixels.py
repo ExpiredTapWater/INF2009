@@ -62,15 +62,12 @@ class Pixels:
             func()
 
     def _wakeup(self, direction=0):
-        brightness = 0.2  # 20% brightness
-        green = [0, int(255 * brightness), 0]  # RGB for green
-
         for i in range(1, 25):
-            colors = green * self.PIXELS_N  # repeat for each LED
+            colors = [i * v for v in self.basis]
             self.write(colors)
             time.sleep(0.01)
 
-        self.colors = colors  # store for future animations
+        self.colors = colors
 
     def _listen(self):
         for i in range(1, 25):
