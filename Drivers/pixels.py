@@ -135,13 +135,13 @@ if __name__ == '__main__':
 
         try:
             pixels.wakeup()
-            time.sleep(3)
+            time.sleep(5)
             pixels.think()
-            time.sleep(3)
+            time.sleep(5)
             pixels.speak()
-            time.sleep(3)
+            time.sleep(5)
             pixels.off()
-            time.sleep(3)
+            time.sleep(5)
         except KeyboardInterrupt:
             break
 
