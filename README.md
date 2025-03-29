@@ -14,7 +14,12 @@
         - `cd seeed-voicecard` (Change directory)
         - `sudo ./install.sh` (Run install script)
         - `sudo reboot`
-4. Test drivers:
+    - Installing `spidev` library:
+        - `sudo apt install python3-dev portaudio19-dev` <-- Important!
+        - `pip install spidev`
+4. Enable SPI interface (For LEDs)
+    - `sudo raspi-config`
+5. Test drivers:
     - `arecord -l` (Check ID, mine is 1)
     - `arecord -D "plughw:1,0" -f S16_LE -r 16000 -d 5 -t wav test.wav` (Record a short audio clip)
     - `aplay -D "plughw:1,0" test.wav` (Playback via 3.5mm)
