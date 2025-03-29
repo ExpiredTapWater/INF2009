@@ -40,7 +40,9 @@ def setup_porcupine():
 
 def setup_cheetah():
 
-    cheetah = create(access_key=key)
+    cheetah = create(access_key=key,
+                     endpoint_duration_sec=0.5,
+                     enable_automatic_punctuation=False)
     print("Cheetah Ready")
     
     return cheetah
