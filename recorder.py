@@ -98,11 +98,10 @@ def main():
 
             # If wake word detected
             if result >= 0:
-                pixels.wakeup()
                 print(f"[DEBUG] Detected: '{keywords_formatted[result]}'")
-                print("[INFO] Transcription started...")
 
                 start_time = time.time()
+                pixels.think()
 
                 while True:
                     frame = recorder.read()
