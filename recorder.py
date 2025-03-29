@@ -86,16 +86,16 @@ def main():
                 print(f"[DEBUG] Detected: '{keywords_formatted[result]}'")
 
                 # Start to transcribe text
-                while True:
-                    frame = recorder.read()
-                    partial_transcript, is_endpoint = cheetah.process(frame)
+                #while True:
+                #    frame = recorder.read()
+                #    partial_transcript, is_endpoint = cheetah.process(frame)
                     #print(partial_transcript, end='', flush=True)
 
-                    if is_endpoint:
-                        final_transcript = cheetah.flush()
-                        print(final_transcript)
-                        print("Transcription Done, returning to main loop")
-                        break
+                #    if is_endpoint:
+                #        final_transcript = cheetah.flush()
+                #        print(final_transcript)
+                #        print("Transcription Done, returning to main loop")
+                #        break
 
     except KeyboardInterrupt:
         print("Stopping...")
