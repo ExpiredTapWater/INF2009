@@ -6,15 +6,15 @@ from pvrecorder import PvRecorder
 
 # --------------- Setup Environment ---------------
 key = os.getenv("PICOVOICE_KEY")
+audio_device_index = -1  # Default device
 
-# ---------- Wake Word (Porcupine) Setup ----------
+# ---------------- Setup PicoVoice ----------------
 def setup_porcupine():
 
     # Basic setup
     keywords = ["porcupine", "raspberry pi"]
     sensitivities = [0.5 , 0.5]  # Sensitivity per keyword
-    audio_device_index = -1  # Default device
-
+    
     # Prepare keywords
     keyword_paths = [
         pvporcupine.KEYWORD_PATHS["porcupine"],
@@ -30,48 +30,80 @@ def setup_porcupine():
         sensitivities=sensitivities
     )
 
+    print("Porcupine Ready")
+
+    # DEBUG: confirm if frame length is the sam for cheetah: YES (512)
+    # print(f"DEBUG: Porcupine Frame: {porcupine.frame_length} ")
+
+    return porcupine, keywords_formatted
+
+def setup_cheetah():
+
+    cheetah = create(access_key=key)
+    print("Cheetah Ready")
+    
+    return cheetah
+
+def setup_recorder():
+
     # Initialize Mic Input
     recorder = PvRecorder(
-        frame_length=porcupine.frame_length,
+        frame_length=512,
         device_index=audio_device_index
     )
 
     recorder.start()
+    print("Input Device Ready")
 
-    print("Porcupine Ready")
-    print(f"DEBUG: Porcupine Frame: {porcupine.frame_length} ")
-    return porcupine, recorder, keywords_formatted
-
-# ---------- Real Time S2T Setup (Cheetah) ----------
-def setup_cheetah():
-
-    cheetah = create(access_key=key)
-    print(f"DEBUG: Cheetah Frame: {cheetah.frame_length} ")
+    return recorder
 
 
 # ---------- Main Function Start ----------
 def main():
 
-    # Get porcupine instance
-    porcupine, recorder, keywords_formatted = setup_porcupine()
-    setup_cheetah()
+    # Get wake-word model instance
+    porcupine, keywords_formatted = setup_porcupine()
 
-    print("Running")
+    # Get speech to text model instance
+    cheetah = setup_cheetah()
+
+    # Setup audio input
+    recorder = setup_recorder()
 
     try:
+
+        # Run forever
         while True:
+            
+            # Get audio frame
             pcm = recorder.read()
+
+            # Check for wake word
             result = porcupine.process(pcm)
 
+            # If wake word detected
             if result >= 0:
-                print(f"Detected '{keywords_formatted[result]}'")
+                print(f"[DEBUG] Detected: '{keywords_formatted[result]}'")
+
+                # Start to transcribe text
+                while True:
+                    frame = recorder.read()
+                    partial_transcript, is_endpoint = cheetah.process(frame)
+                    print(partial_transcript, end='', flush=True)
+
+                    if is_endpoint:
+                        final_transcript = cheetah.flush()
+                        print(final_transcript)
+                        print("Transcription Done, returning to main loop")
+                        break
 
     except KeyboardInterrupt:
         print("Stopping...")
 
     finally:
-        recorder.delete()
         porcupine.delete()
+        cheetah.delete()
+        recorder.delete()
 
 if __name__ == "__main__":
     main()
