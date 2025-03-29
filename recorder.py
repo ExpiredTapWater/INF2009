@@ -1,10 +1,11 @@
 # ----------------- Import Stuff ------------------
 import os
 import pvporcupine
+from pvcheetah import create
 from pvrecorder import PvRecorder
 
 # --------------- Setup Environment ---------------
-access_key = os.getenv("PICOVOICE_KEY")
+key = os.getenv("PICOVOICE_KEY")
 
 # ---------- Wake Word (Porcupine) Setup ----------
 def setup_porcupine():
@@ -24,7 +25,7 @@ def setup_porcupine():
 
     # Initialize
     porcupine = pvporcupine.create(
-        access_key=access_key,
+        access_key=key,
         keyword_paths=keyword_paths,
         sensitivities=sensitivities
     )
@@ -38,13 +39,22 @@ def setup_porcupine():
     recorder.start()
 
     print("Porcupine Ready")
+    print(f"DEBUG: Porcupine Frame: {porcupine.frame_length} ")
     return porcupine, recorder, keywords_formatted
+
+# ---------- Real Time S2T Setup (Cheetah) ----------
+def setup_cheetah():
+
+    cheetah = create(access_key=key)
+    print(f"DEBUG: Cheetah Frame: {cheetah.frame_length} ")
+
 
 # ---------- Main Function Start ----------
 def main():
 
     # Get porcupine instance
     porcupine, recorder, keywords_formatted = setup_porcupine()
+    setup_cheetah()
 
     try:
         while True:
