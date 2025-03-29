@@ -65,9 +65,6 @@ def setup_recorder():
 def setup_LED():
 
     pixels = Pixels()
-    pixels.wakeup()
-    pixels.off()
-
     print("LED Ready")
 
     return pixels
@@ -76,17 +73,20 @@ def setup_LED():
 # ---------- Main Function Start ----------
 def main():
 
+    # Setup LED
+    pixels = setup_LED()
+    pixels.set_pixel_color(1, 0, 255, 0, brightness=0.2)
+
     # Get wake-word model instance
     porcupine, keywords_formatted = setup_porcupine()
+    pixels.set_pixel_color(2, 0, 255, 0, brightness=0.2)
 
     # Get speech to text model instance
     cheetah = setup_cheetah()
 
     # Setup audio input
     recorder = setup_recorder()
-
-    # Setup LED
-    pixels = setup_LED()
+    pixels.set_pixel_color(3, 0, 255, 0, brightness=0.2)
 
     try:
 

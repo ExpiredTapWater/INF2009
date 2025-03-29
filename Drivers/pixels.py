@@ -131,6 +131,37 @@ class Pixels:
 
         self.dev.show()
 
+    def set_pixel_color(self, index, r, g, b, brightness=1.0):
+        """
+        Set a single LED to a specific color with optional brightness (0.0–1.0)
+        """
+        r = int(r * brightness)
+        g = int(g * brightness)
+        b = int(b * brightness)
+        self.dev.set_pixel(index, r, g, b)
+        self.dev.show()
+
+    def set_all_pixels(self, r, g, b, brightness=1.0):
+        """
+        Set all LEDs to the same color with optional brightness (0.0–1.0)
+        """
+        r = int(r * brightness)
+        g = int(g * brightness)
+        b = int(b * brightness)
+        for i in range(self.PIXELS_N):
+            self.dev.set_pixel(i, r, g, b)
+        self.dev.show()
+
+    def set_pixels(self, color_list, brightness=1.0):
+        """
+        Set each LED using a list of (r, g, b) tuples, with optional brightness.
+        Example: [(255, 0, 0), (0, 255, 0), (0, 0, 255)]
+        """
+        for i in range(min(self.PIXELS_N, len(color_list))):
+            r, g, b = color_list[i]
+            self.dev.set_pixel(i, int(r * brightness), int(g * brightness), int(b * brightness))
+        self.dev.show()
+
 
 pixels = Pixels()
 
