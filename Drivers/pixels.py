@@ -152,15 +152,34 @@ class Pixels:
             self.dev.set_pixel(i, r, g, b)
         self.dev.show()
 
-    def set_pixels(self, color_list, brightness=1.0):
+    def blink_pixels(self, color_list, brightness=1.0, interval=0.5):
         """
-        Set each LED using a list of (r, g, b) tuples, with optional brightness.
-        Example: [(255, 0, 0), (0, 255, 0), (0, 0, 255)]
+        Blink each LED with its own color forever, until interrupted.
+        - color_list: list of (r, g, b) tuples, one per LED.
+        - brightness: 0.0–1.0
+        - interval: time between on/off
         """
-        for i in range(min(self.PIXELS_N, len(color_list))):
-            r, g, b = color_list[i]
-            self.dev.set_pixel(i, int(r * brightness), int(g * brightness), int(b * brightness))
-        self.dev.show()
+        def f():
+            self._blink_pixels(color_list, brightness, interval)
+
+        self.next.set()
+        self.queue.put(f)
+
+    def _blink_pixels(self, color_list, brightness, interval):
+        on_colors = []
+        for r, g, b in color_list:
+            on_colors.extend([int(r * brightness), int(g * brightness), int(b * brightness)])
+        off_colors = [0, 0, 0] * self.PIXELS_N
+
+        self.next.clear()
+        while not self.next.is_set():
+            self.write(on_colors)
+            time.sleep(interval)
+            self.write(off_colors)
+            time.sleep(interval)
+
+        # Optional: keep LEDs off or restore color
+        self.write(off_colors)
 
 
 pixels = Pixels()
