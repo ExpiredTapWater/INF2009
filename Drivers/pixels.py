@@ -5,7 +5,7 @@ try:
     from . import apa102
 except:
     import apa102
-
+    
 import time
 import threading
 try:
@@ -79,23 +79,21 @@ class Pixels:
 
     def _think(self):
         colors = self.colors
-        brightness = 0.5  # Set brightness (0.0 to 1.0)
 
         self.next.clear()
         while not self.next.is_set():
             colors = colors[3:] + colors[:3]
-            dimmed = [int(v * brightness) for v in colors]
-            self.write(dimmed)
+            self.write(colors)
             time.sleep(0.2)
 
         t = 0.1
         for i in range(0, 5):
             colors = colors[3:] + colors[:3]
-            fade = [(v * (4 - i) / 4) for v in colors]
-            dimmed_fade = [int(v * brightness) for v in fade]
-            self.write(dimmed_fade)
+            self.write([(v * (4 - i) / 4) for v in colors])
             time.sleep(t)
             t /= 2
+
+        # time.sleep(0.5)
 
         self.colors = colors
 
