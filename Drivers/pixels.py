@@ -35,7 +35,6 @@ class Pixels:
 
     def wakeup(self, direction=0):
         def f():
-            self.basis = [5, 3, 0] * self.PIXELS_N
             self._wakeup(direction)
 
         self.next.set()
