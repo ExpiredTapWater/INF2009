@@ -65,7 +65,7 @@ def main():
     porcupine, keywords_formatted = setup_porcupine()
 
     # Get speech to text model instance
-    #cheetah = setup_cheetah()
+    cheetah = setup_cheetah()
 
     # Setup audio input
     recorder = setup_recorder()
@@ -102,7 +102,7 @@ def main():
 
     finally:
         porcupine.delete()
-        #cheetah.delete()
+        cheetah.delete()
         recorder.delete()
 
 if __name__ == "__main__":
