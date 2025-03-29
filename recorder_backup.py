@@ -1,7 +1,6 @@
 # ----------------- Import Stuff ------------------
 import os
 import time
-from Drivers.pixels import Pixels
 import pvporcupine
 from pvcheetah import create
 from pvrecorder import PvRecorder
@@ -41,7 +40,6 @@ def setup_porcupine():
 
 def setup_cheetah():
 
-    print("Initializing Cheetah")
     cheetah = create(access_key=key,
                      endpoint_duration_sec=0.5,
                      enable_automatic_punctuation=False)
@@ -62,13 +60,6 @@ def setup_recorder():
 
     return recorder
 
-def setup_LED():
-
-    pixels = Pixels()
-    print("LED Ready")
-
-    return pixels
-
 
 # ---------- Main Function Start ----------
 def main():
@@ -81,9 +72,6 @@ def main():
 
     # Setup audio input
     recorder = setup_recorder()
-
-    # Setup LED
-    pixels = setup_LED()
 
     try:
 
@@ -98,7 +86,6 @@ def main():
 
             # If wake word detected
             if result >= 0:
-                pixels.wakeup()
                 print(f"[DEBUG] Detected: '{keywords_formatted[result]}'")
                 print("[INFO] Transcription started...")
 
@@ -113,13 +100,11 @@ def main():
                         final_transcript = cheetah.flush()
                         print(f"\n[Final Transcript] {final_transcript}")
                         print("[OK] Transcription complete")
-                        pixels.off()
                         break
 
                     # Check for timeout
                     if time.time() - start_time > 10:
                         print("\n[ERR] Transcription timeout")
-                        pixels.off()
                         break
 
     except KeyboardInterrupt:
