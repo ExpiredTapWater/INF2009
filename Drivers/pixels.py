@@ -131,6 +131,30 @@ class Pixels:
 
         self.dev.show()
 
+    def blink(self, color='red'):
+        self.next.set()
+        self.queue.put(lambda: self._blink(color))
+
+    def _blink(self, color):
+        if color == 'red':
+            rgb = [14, 0, 0]
+        elif color == 'green':
+            rgb = [0, 14, 0]
+        else:
+            rgb = [0, 0, 14]  # fallback to blue for unknown color
+
+        blink_colors = rgb * self.PIXELS_N
+        off_colors = [0] * 3 * self.PIXELS_N
+
+        for _ in range(3):
+            self.write(blink_colors)
+            time.sleep(0.3)
+            self.write(off_colors)
+            time.sleep(0.3)
+
+        self.off()
+
+
 pixels = Pixels()
 
 

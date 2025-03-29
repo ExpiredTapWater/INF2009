@@ -115,13 +115,13 @@ def main():
                         final_transcript = cheetah.flush()
                         print(f"\n[Final Transcript] {final_transcript}")
                         print("[OK] Transcription complete")
-                        pixels.off()
+                        pixels.blink('green', times=3)
                         break
 
                     # Check for timeout
                     if time.time() - start_time > 10:
                         print("\n[ERR] Transcription timeout")
-                        pixels.off()
+                        pixels.blink('red', times=3)
                         break
 
     except KeyboardInterrupt:
