@@ -122,15 +122,16 @@ def main():
                 ## DEBUG ONLY
 
                 start_time = time.time()
+                full_transcript = ""
 
                 while True:
                     frame = recorder.read()
                     partial_transcript, is_endpoint = cheetah.process(frame)
+                    full_transcript += partial_transcript
                     print(partial_transcript, end='', flush=True)
 
                     if is_endpoint:
-                        final_transcript = cheetah.flush()
-                        print(f"\n[DEBUG Transcript] {partial_transcript} {final_transcript}")
+                        final_transcript = full_transcript + cheetah.flush()
                         print(f"\n[Final Transcript] {final_transcript}")
                         print("[OK] Transcription complete")
                         pixels.blink('green')
