@@ -1,14 +1,21 @@
 # ----------------- Import Stuff ------------------
 import os
 import time
-from Drivers.pixels import Pixels
 import pvporcupine
 from pvcheetah import create
 from pvrecorder import PvRecorder
+from gpiozero import Button
+from Drivers.pixels import Pixels
 
 # --------------- Setup Environment ---------------
 key = os.getenv("PICOVOICE_KEY")
 audio_device_index = -1  # Default device
+button = Button(17)
+
+def on_press():
+    print("Button was pressed!")
+
+button.when_pressed = on_press
 
 # ---------------- Setup PicoVoice ----------------
 def setup_porcupine():
