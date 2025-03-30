@@ -12,11 +12,6 @@ key = os.getenv("PICOVOICE_KEY")
 audio_device_index = -1  # Default device
 button = Button(17)
 
-def on_press():
-    print("Button was pressed!")
-
-button.when_pressed = on_press
-
 # ---------------- Setup PicoVoice ----------------
 def setup_porcupine():
 
