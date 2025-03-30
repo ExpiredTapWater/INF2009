@@ -14,9 +14,10 @@
         - `cd seeed-voicecard` (Change directory)
         - `sudo ./install.sh` (Run install script)
         - `sudo reboot`
-    - Installing `spidev` library:
+    - Installing `spidev` and GPIO library:
         - `sudo apt install python3-dev portaudio19-dev` <-- Important!
         - `pip install spidev`
+        - `pip install rpi.gpio`
 4. Enable SPI interface (For LEDs)
     - `sudo raspi-config`
 5. Test drivers:
