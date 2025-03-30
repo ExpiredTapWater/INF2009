@@ -1,6 +1,7 @@
 # ----------------- Import Stuff ------------------
 import os
 import time
+import threading
 import pvporcupine
 from pvcheetah import create
 from pvrecorder import PvRecorder
@@ -13,17 +14,13 @@ audio_device_index = -1  # Default device
 
 # ----------------- Button Setup ------------------
 button = Button(17)
-last_press = 0
-BYPASS_WAKE_WORD = False
+bypass_event = threading.Event()
 
-def on_button_press():
-    global last_press
-    now = time.time()
-    if now - last_press > 0.3:  # 300 ms debounce
-        BYPASS_WAKE_WORD = True
-        last_press = now
+def bypass_wake():
+    print("[DEBUG] Button pressed — bypassing wake word!")
+    bypass_event.set()
 
-button.when_pressed = on_button_press
+button.when_pressed = bypass_wake
 # ---------------- Setup PicoVoice ----------------
 def setup_porcupine():
 
@@ -113,14 +110,14 @@ def main():
             result = porcupine.process(pcm)
 
             # If wake word detected
-            if result >= 0 or BYPASS_WAKE_WORD:
+            if result >= 0 or bypass_event.is_set():
+                
+                bypass_event.clear()  # Reset for future presses
                 pixels.think()
 
                 ## DEBUG ONLY
                 if result >= 0:
                     print(f"[DEBUG] Detected: '{keywords_formatted[result]}'")
-                else:
-                    print("Button Bypass")
                 ## DEBUG ONLY
 
                 start_time = time.time()
