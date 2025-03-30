@@ -5,9 +5,11 @@
 
    ```
     sudo apt update && sudp apt upgrade -y
+    sudo raspi-config # Enable SPI
     sudo reboot
     sudo apt install git
    ```
+
 4. Install drivers
     - The original repo seems to be depreciated, and did not work when I tested it.
     - Need to use 3rd party libraries:
@@ -23,12 +25,17 @@
     - Fix: RuntimeError: Failed to add edge detection (Required for buttons)
         - `pip uninstall RPi.GPIO`
         - `pip install rpi-lgpio`
-5. Enable SPI interface (For LEDs)
-    - `sudo raspi-config`
-6. Test drivers:
+5. Test drivers:
     - `arecord -l` (Check ID, mine is 1)
     - `arecord -D "plughw:1,0" -f S16_LE -r 16000 -d 5 -t wav test.wav` (Record a short audio clip)
     - `aplay -D "plughw:1,0" test.wav` (Playback via 3.5mm)
+6. Setup MQTT
+    - Install Mosquitto and Mosquitto Clients:
+        - `sudo apt install mosquitto mosquitto-clients -y`
+    - Enable Mosquitto to start on boot:
+        - `sudo systemctl enable mosquitto`
+    - (Optional) Verify it is running:
+        - `systemctl status mosquitto`
 
 ### PicoVoice Setup
 1. Setup virtual environment
@@ -44,6 +51,8 @@
 3. Install PicoVoice libraries (Or use requirements.txt)
     - `pip install pvporcupine` (Wake word detection)
     - `pip install pvcheeta` (Speech to Text)
+4. Install Other libraries
+    - `pip install paho-mqtt`
 
 ### Raspberry Pi 4 Setup (Main Unit)
 1. Install 64-bit Lite OS via Pi Imager
@@ -56,7 +65,7 @@
     sudo reboot
     sudo apt install git
    ```
-### spaCy Setup
+### spaCy, MQTT Setup
 1. Setup virtual environment
     - `mkdir venv` (Creates a folder to store all our environments)
     - `cd venv`
@@ -71,6 +80,13 @@
     pip install spacy --prefer-binary
     python -m spacy download en_core_web_sm
     ```
+4. Setup MQTT
+    - Install Mosquitto and Mosquitto Clients:
+        - `sudo apt install mosquitto mosquitto-clients -y`
+    - Enable Mosquitto to start on boot:
+        - `sudo systemctl enable mosquitto`
+    - (Optional) Verify it is running:
+        - `systemctl status mosquitto`
 
 ### Github Authentication Setup (During development only)
 We'll need to create SSH keys in order to clone our private repo
@@ -81,4 +97,9 @@ We'll need to create SSH keys in order to clone our private repo
     - GitHub → Profile icon → Settings → SSH and GPG Keys → New SSH Key
 3. Test connection:
     - `ssh -T git@github.com`
+
+### Helpful Commands
+- MQTT Debug
+    - Listener: `mosquitto_sub -h localhost -t test/topic -v`
+    - Publisher: `mosquitto_pub -h <IP_ADDR> -t test/topic -m "Hello from Pi"`
 
