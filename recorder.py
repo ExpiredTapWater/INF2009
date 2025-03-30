@@ -9,15 +9,16 @@ from gpiozero import Button
 from Drivers.pixels import Pixels
 
 # --------------- Setup Environment ---------------
-key = os.getenv("PICOVOICE_KEY")
-audio_device_index = -1  # Default device
+KEY = os.getenv("PICOVOICE_KEY")
+AUDIO_DEVICE = -1  # Default device
+FRAME_LENGTH = 512
+TIMEOUT = 10 # In seconds
 
 # ----------------- Button Setup ------------------
 button = Button(17)
 bypass_event = threading.Event()
 
 def bypass_wake():
-    print("[DEBUG] Button pressed — bypassing wake word!")
     bypass_event.set()
 
 button.when_pressed = bypass_wake
@@ -38,7 +39,7 @@ def setup_porcupine():
 
     # Initialize
     porcupine = pvporcupine.create(
-        access_key=key,
+        access_key=KEY,
         keyword_paths=keyword_paths,
         sensitivities=sensitivities
     )
@@ -53,7 +54,7 @@ def setup_porcupine():
 def setup_cheetah():
 
     print("Initializing Cheetah")
-    cheetah = create(access_key=key,
+    cheetah = create(access_key=KEY,
                      endpoint_duration_sec=0.5,
                      enable_automatic_punctuation=False)
     print("Cheetah Ready")
@@ -64,8 +65,8 @@ def setup_recorder():
 
     # Initialize Mic Input
     recorder = PvRecorder(
-        frame_length=512,
-        device_index=audio_device_index
+        frame_length=FRAME_LENGTH,
+        device_index=AUDIO_DEVICE
     )
 
     recorder.start()
@@ -111,9 +112,9 @@ def main():
 
             # If wake word detected
             if result >= 0 or bypass_event.is_set():
-                
-                bypass_event.clear()  # Reset for future presses
-                pixels.think()
+
+                bypass_event.clear()    # Reset for future presses
+                pixels.think()          # Display LED animation
 
                 ## DEBUG ONLY
                 if result >= 0:
@@ -135,7 +136,7 @@ def main():
                         break
 
                     # Check for timeout
-                    if time.time() - start_time > 10:
+                    if time.time() - start_time > TIMEOUT:
                         print("\n[ERR] Transcription timeout")
                         pixels.blink('red')
                         break
