@@ -1,28 +1,14 @@
 # ----------------- Import Stuff ------------------
 import os
 import time
-import threading
-import RPi.GPIO as GPIO
+from Drivers.pixels import Pixels
 import pvporcupine
 from pvcheetah import create
 from pvrecorder import PvRecorder
-from Drivers.pixels import Pixels
 
 # --------------- Setup Environment ---------------
 key = os.getenv("PICOVOICE_KEY")
 audio_device_index = -1  # Default device
-override = threading.Event()
-BUTTON_PIN = 17
-
-# ----------------- Setup Button ------------------ 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
-def on_button_press(channel):
-    print("[DEBUG] Button pressed — forcing wake!")
-    override.set()
-
-GPIO.add_event_detect(BUTTON_PIN, GPIO.FALLING, callback=on_button_press, bouncetime=200)
 
 # ---------------- Setup PicoVoice ----------------
 def setup_porcupine():
@@ -112,21 +98,10 @@ def main():
             # Check for wake word
             result = porcupine.process(pcm)
 
-            # If wake word detected or button override is used
-            if result >= 0 or override.is_set():
-
-                # Reset flag 
-                override.clear() 
-
-                # Play LED animation
+            # If wake word detected
+            if result >= 0:
                 pixels.think()
-
-                # FOR DEBUG ONLY ----------------------------------------------
-                if result >= 0:
-                    print(f"[DEBUG] Detected: '{keywords_formatted[result]}'")
-                else:
-                    print("[DEBUG] Wake triggered by button")
-                # FOR DEBUG ONLY ----------------------------------------------
+                print(f"[DEBUG] Detected: '{keywords_formatted[result]}'")
 
                 start_time = time.time()
 
