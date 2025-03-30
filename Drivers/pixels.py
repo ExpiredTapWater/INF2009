@@ -140,6 +140,8 @@ class Pixels:
             rgb = [10, 0, 0]
         elif color == 'green':
             rgb = [0, 10, 0]
+        elif color == 'orange':
+            rgb = [12, 7, 0]
         else:
             rgb = [0, 0, 10]  # fallback to blue for unknown color
 

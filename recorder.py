@@ -3,6 +3,7 @@ import os
 import time
 import threading
 import pvporcupine
+import paho.mqtt.publish as publish
 from pvcheetah import create
 from pvrecorder import PvRecorder
 from gpiozero import Button
@@ -13,6 +14,10 @@ KEY = os.getenv("PICOVOICE_KEY")
 AUDIO_DEVICE = -1  # Default device
 FRAME_LENGTH = 512
 TIMEOUT = 10 # In seconds
+MQTT_BROKER_LOCAL = '192.168.68.75'
+MQTT_BROKER_TAILSCALE = ''
+MQTT_LOCAL_MODE = False
+MQTT_TOPIC = 'pi/transcript'
 
 # ----------------- Button Setup ------------------
 button = Button(17)
@@ -22,6 +27,23 @@ def bypass_wake():
     bypass_event.set()
 
 button.when_pressed = bypass_wake
+
+# ---------------- MQTT Function ------------------
+def send_transcript(transcript):
+
+    try:
+        if MQTT_LOCAL_MODE:
+            publish.single(MQTT_TOPIC, transcript, hostname=MQTT_BROKER_LOCAL)
+        else:
+            publish.single(MQTT_TOPIC, transcript, hostname=MQTT_BROKER_TAILSCALE)
+
+        return True
+    
+    except Exception as e:
+
+        print("MQTT Publish Failed", e)
+        return False
+
 # ---------------- Setup PicoVoice ----------------
 def setup_porcupine():
 
@@ -125,16 +147,28 @@ def main():
                 full_transcript = ""
 
                 while True:
-                    frame = recorder.read()
-                    partial_transcript, is_endpoint = cheetah.process(frame)
-                    full_transcript += partial_transcript
-                    print(partial_transcript, end='', flush=True)
 
+                    frame = recorder.read()                                     # Read audio frame
+                    partial_transcript, is_endpoint = cheetah.process(frame)    # Get partial transcript
+
+                    full_transcript += partial_transcript   # Append the partial transcript as we read
+                    
+                    print(partial_transcript, end='', flush=True) # DEBUG Print
+
+                    # Once VAD detects the user is no longer speaking
                     if is_endpoint:
+
+                        # Combine the partial with the remaining (flush) transcripts
                         final_transcript = full_transcript + cheetah.flush()
                         print(f"\n[Final Transcript] {final_transcript}")
-                        print("[OK] Transcription complete")
-                        pixels.blink('green')
+
+                        # Send MQTT
+                        state = send_transcript(final_transcript)
+                        if state:
+                            pixels.blink('green') # S2T and MQTT OK
+                        else:
+                            pixels.blink('orange') # S2T OK MQTT not OK
+
                         break
 
                     # Check for timeout
