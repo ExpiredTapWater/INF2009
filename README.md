@@ -17,7 +17,9 @@
     - Installing `spidev` and GPIO library:
         - `sudo apt install python3-dev portaudio19-dev` <-- Important!
         - `pip install spidev`
-        - `pip install rpi.gpio`
+    - Fix: RuntimeError: Failed to add edge detection (Required for buttons)
+        - `pip uninstall RPi.GPIO`
+        - `pip install rpi-lgpio`
 4. Enable SPI interface (For LEDs)
     - `sudo raspi-config`
 5. Test drivers:
@@ -36,4 +38,4 @@
         - You can now type `inf2009` to activate the environment
 3. Install PicoVoice libraries (Or use requirements.txt)
     - `pip install pvporcupine` (Wake word detection)
-    - `pip install pvcobra` (Voice activity detection)
+    - `pip install pvcheeta` (Speech to Text)
