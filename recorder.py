@@ -126,7 +126,7 @@ def main():
                 while True:
                     frame = recorder.read()
                     partial_transcript, is_endpoint = cheetah.process(frame)
-                    print(partial_transcript, end='', flush=True)
+                    #print(partial_transcript, end='', flush=True)
 
                     if is_endpoint:
                         final_transcript = cheetah.flush()
