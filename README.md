@@ -56,7 +56,7 @@
     sudo reboot
     sudo apt install git
    ```
-### ONNX Setup
+### spaCy Setup
 1. Setup virtual environment
     - `mkdir venv` (Creates a folder to store all our environments)
     - `cd venv`
@@ -65,6 +65,12 @@
     - `sudo nano ~/.bashrc`
     - Add `alias inf2009='source ~/venv/inf2009/bin/activate'`
     - You can now type `inf2009` to activate the environment
+3. Install libraries:
+
+    ```
+    pip install spacy --prefer-binary
+    python -m spacy download en_core_web_sm
+    ```
 
 ### Github Authentication Setup (During development only)
 We'll need to create SSH keys in order to clone our private repo
