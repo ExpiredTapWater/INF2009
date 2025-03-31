@@ -4,6 +4,7 @@ import re
 import picollm
 import spacy
 import paho.mqtt.client as mqtt
+from google import genai
 
 # --------------- Setup Environment ---------------
 MQTT_BROKER = "localhost"
@@ -11,12 +12,15 @@ MQTT_PORT = 1883
 MQTT_TOPIC = "pi/transcript"
 LLM_PATH = './phi3.5-289.pllm'
 KEY = os.getenv("PICOVOICE_KEY")
+GEMINI_KEY = os.getenv("GEMINI_KEY")
 NLP = None
 LLM = None
 PROMPT = (
     "Rewrite the sentence in second person. Respond in the following format: OUTPUT: <Text>\n"
     "{TEXT}"
 )
+
+gemini = genai.Client(api_key=GEMINI_KEY)
 
 # Called when client connects to the broker
 def on_connect(client, userdata, flags, rc):
@@ -46,18 +50,23 @@ def on_message(client, userdata, msg):
     else:
         print("No person detected.")
 
-    print("Transforming text")
-    formatted_prompt = PROMPT.format(TEXT=text)
-    response = LLM.generate(prompt=formatted_prompt,
-                            completion_token_limit=64,
-                            stop_phrases=["<|endoftext|>", "###", "##"])
-    #print(response.completion)
+    response = client.models.generate_content(
+        model="gemini-2.0-flash", contents=f"Rewrite the sentence in second person: {text} Only respond with the text"
+    )
+    print(response.text)
 
-    cleaned = response.completion.replace("<|endoftext|>", "").replace("<|assistant|>", "")
-    cleaned = cleaned.replace("\n", " ").strip()  # Remove newlines and trim
-    cleaned = re.sub(r"^[^a-zA-Z0-9]*", "", cleaned)  # Remove leading junk like "today?" or punctuation
-    cleaned = re.sub(r'\s+', ' ', cleaned)  # Normalize spaces
-    print("Cleaned response:", cleaned)
+    #print("Transforming text")
+    #formatted_prompt = PROMPT.format(TEXT=text)
+    #response = LLM.generate(prompt=formatted_prompt,
+    #                        completion_token_limit=64,
+    #                        stop_phrases=["<|endoftext|>", "###", "##"])
+    #print(response.completion)
+#   #
+    #cleaned = response.completion.replace("<|endoftext|>", "").replace("<|assistant|>", "")
+    #cleaned = cleaned.replace("\n", " ").strip()  # Remove newlines and trim
+    #cleaned = re.sub(r"^[^a-zA-Z0-9]*", "", cleaned)  # Remove leading junk like "today?" or punctuation
+    #cleaned = re.sub(r'\s+', ' ', cleaned)  # Normalize spaces
+    #print("Cleaned response:", cleaned)
 
 # Load spaCy model
 def load_spacy():
