@@ -139,7 +139,7 @@ def subtractive_detection():
 
         if first_frame is None:
             first_frame = gray
-            print("Background Frame Initialized")
+            print("Background Frame Initialized, Starting...")
             continue
 
         frame_delta = cv2.absdiff(first_frame, gray)
