@@ -2,10 +2,10 @@
 import os
 import cv2
 import time
-import gTTS
 import pyttsx3
 import sqlite3
 import datetime
+from gtts import gTTS
 from picamera2 import Picamera2
 
 # --------------- Setup Environment ---------------
