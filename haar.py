@@ -3,7 +3,7 @@ from picamera2 import Picamera2
 import time
 
 # Load pre-trained people detector (Haar cascade for full body)
-people_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fullbody.xml')
+people_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_upperbody.xml')
 
 # Initialize camera
 picam2 = Picamera2()
@@ -18,7 +18,12 @@ while True:
     gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
 
     # Detect people
-    people = people_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=3, minSize=(60, 60))
+    people = people_cascade.detectMultiScale(
+        gray,
+        scaleFactor=1.05,   # smaller steps = more detections, slower
+        minNeighbors=2,     # lower = more sensitive
+        minSize=(30, 30)    # detect smaller people
+    )
 
     if len(people) > 0:
         print(f"🚨 Detected {len(people)} person(s)")
