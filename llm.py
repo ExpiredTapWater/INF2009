@@ -8,5 +8,5 @@ pllm = picollm.create(
 print("Running")
 res = pllm.generate(prompt='Instruct: Rewrite the sentence to 2nd person "Remind John to buy dinner on his way home"\nOutput:',
                     completion_token_limit=64,
-                    stop_sequences=["\n", "Instruct:", "Exercise:"])
+                    stop_phrases=["\n", "Instruct:", "Exercise:"])
 print(res.completion)
