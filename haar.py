@@ -21,8 +21,8 @@ while True:
     people = people_cascade.detectMultiScale(
         gray,
         scaleFactor=1.05,   # smaller steps = more detections, slower
-        minNeighbors=1,     # lower = more sensitive
-        minSize=(30, 30)    # detect smaller people
+        minNeighbors=2,     # lower = more sensitive
+        minSize=(40, 40)    # detect smaller people
     )
 
     if len(people) > 0:
