@@ -1,2 +1,5 @@
 LOCAL_ONLY = false
 APPLY_2ND_PERSON = true
+HAAR = false
+HAAR_THRESHOLD = 2000
+CAPTURE = false
