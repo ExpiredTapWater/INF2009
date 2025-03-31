@@ -88,6 +88,7 @@ with st.form("reminder_form"):
         st.rerun()
 
 # --- Display Reminders ---
+st.divider()
 st.subheader("Current Reminders")
 reminders = get_all_reminders()
 if reminders:
@@ -108,6 +109,7 @@ else:
     st.info("No reminders found.")
 
 # --- Config Editor ---
+st.divider()
 st.subheader("Configuration Settings")
 if os.path.exists(CONFIG_PATH):
     config = read_config(CONFIG_PATH)
