@@ -131,6 +131,7 @@ def on_message(client, userdata, msg):
 
     # Decode MQTT message
     text = msg.payload.decode("utf-8")
+    print("Received", text)
 
     # Save original MQTT
     reminder["Text"] = text
@@ -151,8 +152,6 @@ def on_message(client, userdata, msg):
     # If no name or "me" detected
     if reminder["Name"] == "":
         reminder["Name"] = "None"
-
-    print("Extracted:", reminder)
 
     # If 2nd person text transform is requested
     if APPLY_2ND_PERSON:
