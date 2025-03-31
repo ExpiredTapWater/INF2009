@@ -95,11 +95,11 @@ if reminders:
         id_, name, text, modified_text = reminder
         cols = st.columns([4, 4, 4, 1])
         with cols[0]:
-            st.markdown(f"#### **Name:** {name}", unsafe_allow_html=True)
+            st.markdown(f"**Name:** {name}", unsafe_allow_html=True)
         with cols[1]:
-            st.markdown(f"#### **Text:** {text}", unsafe_allow_html=True)
+            st.markdown(f"**Text:** {text}", unsafe_allow_html=True)
         with cols[2]:
-            st.markdown(f"#### **Modified:** {modified_text}", unsafe_allow_html=True)
+            st.markdown(f"**Modified:** {modified_text}", unsafe_allow_html=True)
         with cols[3]:
             if st.button("Delete", key=f"delete_{id_}"):
                 delete_reminder(id_)
@@ -114,13 +114,19 @@ if os.path.exists(CONFIG_PATH):
     
     with st.form("config_form"):
         bool_keys = ["LOCAL_ONLY", "LOCAL_TTS", "APPLY_2ND_PERSON", "HAAR", "CAPTURE"]
+        display_names = {"LOCAL_ONLY": "Local Only Mode", 
+                         "LOCAL_TTS" : "Use offline Text-To-Speech", 
+                         "APPLY_2ND_PERSON" : "Process Using LLM", 
+                         "HAAR" : "Use HAAR for Motion Detection", 
+                         "CAPTURE" : "Save Frames with Detected Motion "}
         num_keys = ["VOICE_RATE", "HAAR_THRESHOLD"]
 
         new_config = {}
 
         for key in bool_keys:
             current_value = config.get(key, "false").lower() == "true"
-            new_config[key] = st.checkbox(key, value=current_value)
+            display = display_names.get(key, "false")
+            new_config[key] = st.checkbox(display, value=current_value)
 
         for key in num_keys:
             current_value = int(config.get(key, "0"))
