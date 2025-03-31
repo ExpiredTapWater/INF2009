@@ -82,7 +82,7 @@ if "APPLY_2ND_PERSON" in config:
 # --------------- LLM Setup ---------------
 
 LOCAL_PROMPT = ("Rewrite the sentence in second person. Respond in the following format: OUTPUT: <Text>\n{TEXT}")
-GEMINI_PROMPT = "Rewrite the following instruction so that it directly addresses the person using second-person pronouns (you, your): {text} Only respond with the text"
+GEMINI_PROMPT = "Rewrite the following instruction so that it directly addresses the person using second-person pronouns (you, your): {TEXT} Only respond with the text"
 
 # Loads the local or Cloud LLM model
 def load_LLM(LOCAL_ONLY):
@@ -113,7 +113,7 @@ def load_spacy():
 
 # Called when client connects to the broker
 def on_connect(client, userdata, flags, rc):
-    client.subscribe(MQTT_TOPIC)\
+    client.subscribe(MQTT_TOPIC)
     
 # Called when a message is received
 def on_message(client, userdata, msg):
@@ -172,9 +172,17 @@ def on_message(client, userdata, msg):
 
         else: # Use Gemini
             formatted_prompt = GEMINI_PROMPT.format(TEXT=text)
-            response = LLM.models.generate_content(
-                model="gemini-2.0-flash", 
-                contents=formatted_prompt)
+
+            try:
+                response = LLM.models.generate_content(
+                            model="gemini-2.0-flash", 
+                            contents=formatted_prompt)
+                
+                reminder["Modified_Text"] = response.text
+
+            except Exception as e:
+                print(f"Gemini generation failed: {e}")
+                reminder["Modified_Text"] = ""
             
             print("Cleaned response:", response.text)
 
