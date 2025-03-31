@@ -131,7 +131,7 @@ def on_message(client, userdata, msg):
 
     # Decode MQTT message
     text = msg.payload.decode("utf-8")
-    print("Received", text)
+    print(f"[MQTT Received] {text}")
 
     # Save original MQTT
     reminder["Text"] = text
