@@ -65,7 +65,7 @@
     sudo reboot
     sudo apt install git
    ```
-### spaCy, MQTT Setup
+### spaCy, MQTT, LLM Setup
 1. Setup virtual environment
     - `mkdir venv` (Creates a folder to store all our environments)
     - `cd venv`
@@ -91,6 +91,24 @@
     - `sudo apt install -y python3-picamera2`
     - `pip install opencv-python-headless`
     - `pip install imutils`
+6. Text-To-Speech Setup
+    - `sudo apt update && sudo apt install espeak ffmpeg libespeak1`
+    - `pip install pyttsx3`
+    - Configure USB Speaker
+        - Check for the USB device ID using `aplay -l`
+        - `sudo nano /etc/asound.conf`
+        - Add the following:
+        ```
+        defaults.pcm.card 3
+        defaults.pcm.device 0
+        defaults.ctl.card 3
+        ```
+7. Install Other libraries
+    - `pip install paho-mqtt`
+    - `pip install picollm`
+    - `pip install gTTS`
+    - `sudo apt install mpg123`
+
 
 ### Github Authentication Setup (During development only)
 We'll need to create SSH keys in order to clone our private repo
@@ -106,6 +124,18 @@ We'll need to create SSH keys in order to clone our private repo
 - MQTT Debug
     - Listener: `mosquitto_sub -h localhost -t test/topic -v`
     - Publisher: `mosquitto_pub -h <IP_ADDR> -t test/topic -m "Hello from Pi"`
+        - Eg override TTS output by directly sending via MQTT:
+        - `mosquitto_pub -h 100.71.116.35 -t pi/transcript -m "Hello this is a test"`
 - PicoLLM Model Testing
     - After downloading, easily trasnfer to Pi via SCP:
     - Eg. `scp C:\Users\ChenYi\Documents\<FILE_NAME> chenyi@<IP_ADDR>:~/INF2009/`
+- Changing Speaker Volume
+    - Use `aplay -l` to find the ID number of the speaker
+    - Use `amixer -c <ID> scontrols`, take note of the control name ('speaker', 'PCM', etc)
+    - Use `amixer -c 1 sset 'PCM' 80%` To set volume to 80%
+
+### Setting Up Tailscale VPN
+- `curl -fsSL https://tailscale.com/install.sh | sh`
+- `sudo tailscale up`
+- Verify with: `sudo systemctl status tailscaled`
+    - It will run on boot
