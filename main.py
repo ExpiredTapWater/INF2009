@@ -29,12 +29,12 @@ DATABASE_NAME = "reminders.db"
 
 #----------- Database Functions ------------
 def create_table():
-
     conn = sqlite3.connect(DATABASE_NAME)
     cursor = conn.cursor()
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS reminders (
-            name TEXT PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
             text TEXT,
             modified_text TEXT
         )
@@ -44,7 +44,6 @@ def create_table():
 
 # Inserts a reminder into the database.
 def insert_reminder(reminder):
-
     conn = sqlite3.connect(DATABASE_NAME)
     cursor = conn.cursor()
 
@@ -55,8 +54,8 @@ def insert_reminder(reminder):
         """, (reminder["Name"], reminder["Text"], reminder["Modified_Text"]))
         conn.commit()
         print("Inserted:", reminder)
-    except sqlite3.IntegrityError:
-        print(f"Entry for '{reminder['Name']}' already exists.")
+    except Exception as e:
+        print(f"Failed to insert reminder: {e}")
     finally:
         conn.close()
 
