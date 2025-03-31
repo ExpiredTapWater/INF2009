@@ -14,7 +14,7 @@ KEY = os.getenv("PICOVOICE_KEY")
 NLP = None
 LLM = None
 PROMPT = (
-    "Rewrite the sentence as though you are talking to the other person. Only output the rewritten sentence:\n"
+    "Rewrite the sentence as though you are talking to the other person If needed. Only output the rewritten sentence:\n"
     "{TEXT}"
 )
 #"Rewrite the sentence in second person. Only output the rewritten sentence:\n"
@@ -54,7 +54,7 @@ def on_message(client, userdata, msg):
                             stop_phrases=["<|endoftext|>", "###"])
     print(response.completion)
 
-    cleaned = response.completion.strip().replace("<|endoftext|>", "").strip()
+    cleaned = response.completion.replace("<|endoftext|>", "").replace("<|assistant|> ", "").strip()
     cleaned = re.sub(r"^[^a-zA-Z0-9]*", "", cleaned)
     print("Cleaned response:", cleaned)
 
