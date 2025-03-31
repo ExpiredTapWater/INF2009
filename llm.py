@@ -14,5 +14,5 @@ prompt2 = (
 print("Running")
 res = pllm.generate(prompt=prompt2,
                     completion_token_limit=64,
-                    stop_phrases=["\n", "<|endoftext|>", "###"])
+                    stop_phrases=["<|endoftext|>", "###"])
 print(res.completion)
