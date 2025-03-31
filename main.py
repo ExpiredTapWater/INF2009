@@ -8,11 +8,14 @@ import paho.mqtt.client as mqtt
 MQTT_BROKER = "localhost"
 MQTT_PORT = 1883
 MQTT_TOPIC = "pi/transcript"
-LLM_PATH = "./phi2-290.pllm"
+LLM_PATH = './phi3.5-289.pllm'
 KEY = os.getenv("PICOVOICE_KEY")
 NLP = None
 LLM = None
-SYS_PROMPT = "Rewrite this message to be from the recipient perspective:"
+PROMPT = (
+    "Rewrite the sentence in second person. Only output the rewritten sentence:\n"
+    "{TEXT}"
+)
 
 # Called when client connects to the broker
 def on_connect(client, userdata, flags, rc):
@@ -44,7 +47,7 @@ def on_message(client, userdata, msg):
         print("No person detected.")
 
     # TEST CODE
-    formatted_prompt = f"{SYS_PROMPT} '{text}'"
+    formatted_prompt = PROMPT.format(TEXT=text)
     response = LLM.generate(prompt=formatted_prompt)
     print(response.completion)
 
