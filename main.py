@@ -46,9 +46,11 @@ def on_message(client, userdata, msg):
     else:
         print("No person detected.")
 
-    # TEST CODE
+    print("Transforming text")
     formatted_prompt = PROMPT.format(TEXT=text)
-    response = LLM.generate(prompt=formatted_prompt)
+    response = LLM.generate(prompt=formatted_prompt,
+                            completion_token_limit=64,
+                            stop_phrases=["<|endoftext|>", "###"])
     print(response.completion)
 
 # Load spaCy model
