@@ -64,8 +64,6 @@ def create_table():
 
 # Retrieve the last inserted reminder:
 def get_reminder():
-    
-    global first_frame
 
     conn = sqlite3.connect(DATABASE_NAME)
     cursor = conn.cursor()
@@ -127,6 +125,8 @@ def HAAR_detection():
 
 def subtractive_detection():
     print(f"Detection Using: Background Subtraction")
+
+    global first_frame
 
     while True:
         frame = picam2.capture_array()
