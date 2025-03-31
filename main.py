@@ -14,7 +14,7 @@ KEY = os.getenv("PICOVOICE_KEY")
 NLP = None
 LLM = None
 PROMPT = (
-    "Rewrite the sentence in present tense. Only output the rewritten sentence:\n"
+    "Rewrite the sentence as though you are relaying information to another person. Only output the rewritten sentence\n"
     "{TEXT}"
 )
 #"Rewrite the sentence in second person. Only output the rewritten sentence:\n"
@@ -54,8 +54,10 @@ def on_message(client, userdata, msg):
                             stop_phrases=["<|endoftext|>", "###"])
     print(response.completion)
 
-    cleaned = response.completion.replace("<|endoftext|>", "").replace("<|assistant|> ", "").strip()
-    cleaned = re.sub(r"^[^a-zA-Z0-9]*", "", cleaned)
+    cleaned = response.completion.replace("<|endoftext|>", "").replace("<|assistant|>", "")
+    cleaned = cleaned.replace("\n", " ").strip()  # Remove newlines and trim
+    cleaned = re.sub(r"^[^a-zA-Z0-9]*", "", cleaned)  # Remove leading junk like "today?" or punctuation
+    cleaned = re.sub(r'\s+', ' ', cleaned)  # Normalize spaces
     print("Cleaned response:", cleaned)
 
 # Load spaCy model
