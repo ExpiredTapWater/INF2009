@@ -95,11 +95,11 @@ if reminders:
         id_, name, text, modified_text = reminder
         cols = st.columns([4, 4, 4, 1])
         with cols[0]:
-            st.markdown(f"**Name:** {name}", unsafe_allow_html=True)
+            st.markdown(f"**Name:** *{name}*", unsafe_allow_html=True)
         with cols[1]:
-            st.markdown(f"**Text:** {text}", unsafe_allow_html=True)
+            st.markdown(f"**Text:** *{text}*", unsafe_allow_html=True)
         with cols[2]:
-            st.markdown(f"**Modified:** {modified_text}", unsafe_allow_html=True)
+            st.markdown(f"**Modified:** *{modified_text}*", unsafe_allow_html=True)
         with cols[3]:
             if st.button("Delete", key=f"delete_{id_}"):
                 delete_reminder(id_)
