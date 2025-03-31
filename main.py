@@ -12,7 +12,7 @@ LLM_PATH = "./phi2-290.pllm"
 KEY = os.getenv("PICOVOICE_KEY")
 NLP = None
 LLM = None
-SYS_PROMPT = "Rewrite messages to be from the recipient perspective."
+SYS_PROMPT = "Rewrite this message to be from the recipient perspective:"
 
 # Called when client connects to the broker
 def on_connect(client, userdata, flags, rc):
@@ -44,11 +44,8 @@ def on_message(client, userdata, msg):
         print("No person detected.")
 
     # TEST CODE
-    response = LLM.generate(
-    system_prompt="You are a text converter that rewrites any first-person sentence into third-person.",
-    prompt=text
-    )
-
+    formatted_prompt = f"{SYS_PROMPT} '{text}'"
+    response = LLM.generate(prompt=formatted_prompt)
     print(response.completion)
 
 # Load spaCy model
