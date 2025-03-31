@@ -21,8 +21,8 @@ while True:
     faces = face_cascade.detectMultiScale(
         gray,
         scaleFactor=1.1,
-        minNeighbors=3,
-        minSize=(30, 30)
+        minNeighbors=4,
+        minSize=(40, 40)
     )
 
     if len(faces) > 0:
