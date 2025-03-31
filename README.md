@@ -87,6 +87,10 @@
         - `sudo systemctl enable mosquitto`
     - (Optional) Verify it is running:
         - `systemctl status mosquitto`
+5. Camera Setup
+    - `sudo apt install -y python3-picamera2`
+    - `pip install opencv-python-headless`
+    - `pip install imutils`
 
 ### Github Authentication Setup (During development only)
 We'll need to create SSH keys in order to clone our private repo
