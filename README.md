@@ -102,4 +102,6 @@ We'll need to create SSH keys in order to clone our private repo
 - MQTT Debug
     - Listener: `mosquitto_sub -h localhost -t test/topic -v`
     - Publisher: `mosquitto_pub -h <IP_ADDR> -t test/topic -m "Hello from Pi"`
-
+- PicoLLM Model Testing
+    - After downloading, easily trasnfer to Pi via SCP:
+    - Eg. `scp C:\Users\ChenYi\Documents\<FILE_NAME> chenyi@<IP_ADDR>:~/INF2009/`
