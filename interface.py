@@ -75,7 +75,7 @@ st.title("Reminder Manager")
 create_table()
 
 # --- Reminder Input ---
-st.subheader("Add a New Reminder")
+st.subheader("Add Reminder")
 with st.form("reminder_form"):
     cols = st.columns(3)
     name = cols[0].text_input("Name")
@@ -88,7 +88,6 @@ with st.form("reminder_form"):
         st.rerun()
 
 # --- Display Reminders ---
-st.divider()
 st.subheader("Current Reminders")
 reminders = get_all_reminders()
 if reminders:
@@ -110,7 +109,7 @@ else:
 
 # --- Config Editor ---
 st.divider()
-st.subheader("Configuration Settings")
+st.subheader("Configuration")
 if os.path.exists(CONFIG_PATH):
     config = read_config(CONFIG_PATH)
     
