@@ -14,17 +14,7 @@ KEY = os.getenv("PICOVOICE_KEY")
 NLP = None
 LLM = None
 PROMPT = (
-    "Rewrite the sentence in second person. Respond in the following format: OUTPUT: <Text>\n"
-    "{TEXT}"
-)
-PROMPT = (
-    "Rewrite the following instruction so it directly addresses the person involved, using 'you' instead of their name. Keep the sentence short. Respond in this format: OUTPUT: <Text>\n"
-    "{TEXT}"
-)
-PROMPT = (
-    "Rewrite the following instruction so that it directly addresses the person using second-person pronouns (you, your), "
-    "and sounds natural and conversational. Only respond with the revised sentence, prefixed by 'OUTPUT:'.\n\n"
-    "{TEXT}"
+    "Rewrite {TEXT} in second person. Respond in the following format: OUTPUT: <Text>\n"
 )
 #""
 
