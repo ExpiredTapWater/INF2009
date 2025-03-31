@@ -15,7 +15,7 @@ DATABASE_NAME = "reminders.db"
 first_frame = None
 
 # Text-To-Speech
-VOICE_RATE = 125
+VOICE_RATE = 150
 
 # CAMERA
 DELAY = 0.5
@@ -154,22 +154,29 @@ def subtractive_detection():
                 continue
             motion_detected = True
             break
-
+        
+        # Motion is detected
         if motion_detected:
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
             print(f"Motion detected at {timestamp}")
 
-            reminder = get_reminder()
-            if reminder["Modified_Text"] != "":
-                engine.say(reminder["Modified_Text"])
-                engine.runAndWait()
+            # Loop through all saved recordings
+            while True:
+                
+                # Retrieve reminder froms database
+                reminder = get_reminder()
 
-            elif reminder["Text"] != "":
-                engine.say(reminder["Text"])
-                engine.runAndWait()
+                # Break the loop if database is empty
+                if reminder is None:
+                    break
 
-            else:
-                print("No text found on reminder")
+                if reminder["Modified_Text"]:
+                    engine.say(reminder["Modified_Text"])
+                    engine.runAndWait()
+
+                elif reminder["Text"]:
+                    engine.say(reminder["Text"])
+                    engine.runAndWait()
 
             if CAPTURE_ON_MOTION:
                 cv2.imwrite(f"motion_{timestamp}.jpg", frame)
