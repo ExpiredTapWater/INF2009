@@ -18,8 +18,7 @@ PROMPT = (
     "{TEXT}"
 )
 PROMPT = (
-    "Rewrite the following instruction so it directly addresses the person involved, using 'you' instead of their name. "
-    "Make the sentence sound natural and conversational. Respond in this format: OUTPUT: <Text>\n"
+    "Rewrite the following instruction so it directly addresses the person involved, using 'you' instead of their name. Keep the sentence short. Respond in this format: OUTPUT: <Text>\n"
     "{TEXT}"
 )
 #""
