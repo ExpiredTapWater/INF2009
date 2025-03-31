@@ -2,7 +2,6 @@ from picamera2 import Picamera2
 import cv2
 import time
 import datetime
-import numpy as np
 
 # Initialize Pi Camera
 picam2 = Picamera2()
