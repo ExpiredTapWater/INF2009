@@ -1,10 +1,8 @@
 import streamlit as st
 import sqlite3
 
-# Replace with your actual database name
 DATABASE_NAME = "reminders.db"
 
-# Ensure the table exists
 def create_table():
     conn = sqlite3.connect(DATABASE_NAME)
     cursor = conn.cursor()
@@ -52,13 +50,11 @@ def delete_reminder(reminder_id):
 # ------------------ Streamlit UI ------------------
 
 st.set_page_config(page_title="Reminder Manager", layout="wide")
-st.title("📝 Reminder Manager")
+st.title("Reminder Manager")
 
-# Create the table if it doesn't exist
 create_table()
 
-# Form to add a new reminder
-st.subheader("➕ Add a New Reminder")
+st.subheader("Add a New Reminder")
 with st.form("reminder_form"):
     cols = st.columns(3)
     name = cols[0].text_input("Name")
@@ -70,22 +66,21 @@ with st.form("reminder_form"):
         insert_reminder(new_reminder)
         st.rerun()
 
-# Display current reminders
-st.subheader("📋 Current Reminders")
+st.subheader("Current Reminders")
 reminders = get_all_reminders()
 
 if reminders:
     for reminder in reminders:
         id_, name, text, modified_text = reminder
-        cols = st.columns([4, 4, 4, 1])  # Last column for the delete button
+        cols = st.columns([4, 4, 4, 1])
         with cols[0]:
-            st.markdown(f"**ID**: {id_}<br>**Name**: {name}", unsafe_allow_html=True)
+            st.markdown(f"**Name:** {name}", unsafe_allow_html=True)
         with cols[1]:
-            st.markdown(f"**Text**: {text}", unsafe_allow_html=True)
+            st.markdown(f"**Text:** {text}", unsafe_allow_html=True)
         with cols[2]:
-            st.markdown(f"**Modified**: {modified_text}", unsafe_allow_html=True)
+            st.markdown(f"**Modified:** {modified_text}", unsafe_allow_html=True)
         with cols[3]:
-            if st.button("🗑️ Delete", key=f"delete_{id_}"):
+            if st.button("Delete", key=f"delete_{id_}"):
                 delete_reminder(id_)
                 st.rerun()
 else:
