@@ -1,5 +1,6 @@
 # ----------------- Import Stuff ------------------
 import os
+import re
 import picollm
 import spacy
 import paho.mqtt.client as mqtt
@@ -23,7 +24,6 @@ def on_connect(client, userdata, flags, rc):
 
 # Called when a message is received
 def on_message(client, userdata, msg):
-
     global NLP
     text = msg.payload.decode("utf-8")
     print(f"Received message: {text}")
@@ -31,10 +31,10 @@ def on_message(client, userdata, msg):
     doc = NLP(text)
     person_to_message = {}
 
-    # Extract named persons from spaCy
-    for ent in doc.ents:
-        if ent.label_ == "PERSON":
-            name = ent.text.lower()
+    # Use dependency parsing to extract names more accurately
+    for token in doc:
+        if token.ent_type_ == "PERSON" and token.dep_ in ("dobj", "pobj", "nsubj"):
+            name = token.text.lower()
             person_to_message[name] = text
 
     # Manually check for the word "me"
@@ -52,6 +52,10 @@ def on_message(client, userdata, msg):
                             completion_token_limit=64,
                             stop_phrases=["<|endoftext|>", "###"])
     print(response.completion)
+
+    cleaned = response.completion.strip().replace("<|endoftext|>", "").strip()
+    cleaned = re.sub(r"^[^a-zA-Z0-9]*", "", cleaned)
+    print("Cleaned response:", cleaned)
 
 # Load spaCy model
 def load_spacy():
