@@ -1,73 +1,105 @@
 # ----------------- Import Stuff ------------------
 import os
 import re
-import picollm
 import spacy
+import sqlite3
+import picollm
 import paho.mqtt.client as mqtt
 from google import genai
 
 # --------------- Setup Environment ---------------
+# MQTT
 MQTT_BROKER = "localhost"
-MQTT_PORT = 1883
 MQTT_TOPIC = "pi/transcript"
+MQTT_PORT = 1883
+
+# LLM
 LLM_PATH = './phi3.5-289.pllm'
 KEY = os.getenv("PICOVOICE_KEY")
 GEMINI_KEY = os.getenv("GEMINI_KEY")
-NLP = None
 LLM = None
-PROMPT = (
-    "Rewrite the sentence in second person. Respond in the following format: OUTPUT: <Text>\n"
-    "{TEXT}"
-)
 
-gemini = genai.Client(api_key=GEMINI_KEY)
+# NLP
+NLP = None
 
-# Called when client connects to the broker
-def on_connect(client, userdata, flags, rc):
-    client.subscribe(MQTT_TOPIC)
+# SYSTEM
+LOCAL_ONLY = False
+APPLY_2ND_PERSON = False
+DATABASE_NAME = "reminders.db"
 
-# Called when a message is received
-def on_message(client, userdata, msg):
-    global NLP
-    text = msg.payload.decode("utf-8")
-    print(f"Received message: {text}")
+#----------- Database Functions ------------
+def create_table():
 
-    doc = NLP(text)
-    person_to_message = {}
+    conn = sqlite3.connect(DATABASE_NAME)
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS reminders (
+            name TEXT PRIMARY KEY,
+            text TEXT,
+            modified_text TEXT
+        )
+    """)
+    conn.commit()
+    conn.close()
 
-    # Use dependency parsing to extract names more accurately
-    for token in doc:
-        if token.ent_type_ == "PERSON" and token.dep_ in ("dobj", "pobj", "nsubj"):
-            name = token.text.lower()
-            person_to_message[name] = text
+# Inserts a reminder into the database.
+def insert_reminder(reminder):
 
-    # Manually check for the word "me"
-    if re.search(r'\bme\b', text, re.IGNORECASE):
-        person_to_message["me"] = text
+    conn = sqlite3.connect(DATABASE_NAME)
+    cursor = conn.cursor()
 
-    if person_to_message:
-        print("Extracted:", person_to_message)
+    try:
+        cursor.execute("""
+            INSERT INTO reminders (name, text, modified_text)
+            VALUES (?, ?, ?)
+        """, (reminder["Name"], reminder["Text"], reminder["Modified_Text"]))
+        conn.commit()
+        print("Inserted:", reminder)
+    except sqlite3.IntegrityError:
+        print(f"Entry for '{reminder['Name']}' already exists.")
+    finally:
+        conn.close()
+
+# ------- Update Environment via Config.txt --------
+# Easily override variables by using nano config.txt
+
+config = {}
+with open("config.txt") as f:
+    for line in f:
+        if "=" in line:
+            key, value = line.strip().split("=", 1)
+            config[key.strip()] = value.strip()
+
+# Override variable if present
+if "LOCAL_ONLY" in config:
+    LOCAL_ONLY = config["LOCAL_ONLY"].lower() == "true"
+    print(f"Local Only Mode: {LOCAL_ONLY}")
+
+if "APPLY_2ND_PERSON" in config:
+    APPLY_2ND_PERSON = config["APPLY_2ND_PERSON"].lower() == "true"
+    print(f"Apply 2nd Person Transform: {APPLY_2ND_PERSON}")
+
+# --------------- LLM Setup ---------------
+
+LOCAL_PROMPT = ("Rewrite the sentence in second person. Respond in the following format: OUTPUT: <Text>\n{TEXT}")
+GEMINI_PROMPT = "Rewrite the following instruction so that it directly addresses the person using second-person pronouns (you, your): {text} Only respond with the text"
+
+# Loads the local or Cloud LLM model
+def load_LLM(LOCAL_ONLY):
+
+    global LLM
+
+    # Use PicoLLM
+    if LOCAL_ONLY:
+        print(f"Loading LLM from: {LLM_PATH}")
+        LLM = picollm.create(access_key=KEY,model_path=LLM_PATH)
+        print("Local LLM Loaded")
+
+    # Use Gemini
     else:
-        print("No person detected.")
+        LLM = genai.Client(api_key=GEMINI_KEY)
 
-    response = gemini.models.generate_content(
-        model="gemini-2.0-flash", contents=f"Rewrite the following instruction so that it directly addresses the person using second-person pronouns (you, your): {text} Only respond with the text"
-    )
-    print(response.text)
-
-    #print("Transforming text")
-    #formatted_prompt = PROMPT.format(TEXT=text)
-    #response = LLM.generate(prompt=formatted_prompt,
-    #                        completion_token_limit=64,
-    #                        stop_phrases=["<|endoftext|>", "###", "##"])
-    #print(response.completion)
-#   #
-    #cleaned = response.completion.replace("<|endoftext|>", "").replace("<|assistant|>", "")
-    #cleaned = cleaned.replace("\n", " ").strip()  # Remove newlines and trim
-    #cleaned = re.sub(r"^[^a-zA-Z0-9]*", "", cleaned)  # Remove leading junk like "today?" or punctuation
-    #cleaned = re.sub(r'\s+', ' ', cleaned)  # Normalize spaces
-    #print("Cleaned response:", cleaned)
-
+# --------------- NER Setup ---------------
 # Load spaCy model
 def load_spacy():
 
@@ -76,6 +108,80 @@ def load_spacy():
 
     print("spaCy model loaded")
     return NLP
+
+# -------------- MQTT Functions -------------
+
+# Called when client connects to the broker
+def on_connect(client, userdata, flags, rc):
+    client.subscribe(MQTT_TOPIC)\
+    
+# Called when a message is received
+def on_message(client, userdata, msg):
+
+    global NLP
+
+    # Decode MQTT message
+    text = msg.payload.decode("utf-8")
+
+    doc = NLP(text)
+    reminder = {"Name" : "",            # Identified Target
+                "Text" : "",            # Contents of reminder
+                "Modified_Text" : ""}   # 2nd Person modification
+
+    # Check for "me" first as a priority
+    if re.search(r'\bme\b', text, re.IGNORECASE):
+        reminder["Name"] = "me"
+
+    else:
+        # Use dependency parsing to extract the first PERSON name
+        for token in doc:
+            if token.ent_type_ == "PERSON" and token.dep_ in ("dobj", "pobj", "nsubj"):
+                reminder["Name"] = token.text.lower()
+                break
+
+    # If no name or "me" detected
+    if reminder["Name"] == "":
+        reminder["Name"] = "None"
+
+    print("Extracted:", reminder)
+
+    # If 2nd person text transform is requested
+    if APPLY_2ND_PERSON:
+
+        print("Transforming Text")
+        
+        
+        if LOCAL_ONLY: # Use PicoLLM
+
+            # Generate response
+            formatted_prompt = LOCAL_PROMPT.format(TEXT=text)
+            response = LLM.generate(prompt=formatted_prompt,
+                        completion_token_limit=64,
+                        stop_phrases=["<|endoftext|>", "###", "##"])
+            
+            # Cleanup
+            cleaned = response.completion.replace("<|endoftext|>", "").replace("<|assistant|>", "")
+            cleaned = cleaned.replace("\n", " ").strip()  # Remove newlines and trim
+            cleaned = re.sub(r"^[^a-zA-Z0-9]*", "", cleaned)  # Remove leading junk like "today?" or punctuation
+            cleaned = re.sub(r'\s+', ' ', cleaned)  # Normalize spaces
+            print("Cleaned response:", cleaned)
+
+            # Save
+            reminder["Modified_Text"] = cleaned
+            insert_reminder(reminder)
+
+        else: # Use Gemini
+            formatted_prompt = GEMINI_PROMPT.format(TEXT=text)
+            response = LLM.models.generate_content(
+                model="gemini-2.0-flash", 
+                contents=formatted_prompt)
+            
+            print("Cleaned response:", response.text)
+
+            # Save
+            reminder["Modified_Text"] = response.text
+            insert_reminder(reminder)
+
 
 # Setup MQTT
 def load_MQTT():
@@ -92,31 +198,25 @@ def load_MQTT():
 
     return client
 
-def load_LLM():
-
-    global LLM
-    print(f"Loading LLM from: {LLM_PATH}")
-
-    LLM = picollm.create(
-    access_key=KEY,
-    model_path=LLM_PATH
-    )
-
-    print("Model Loaded")
-
+#-------------- Main Function --------------
 def main():
 
     try:
+        create_table()
         load_spacy()
         load_LLM()
         MQTT = load_MQTT()
         MQTT.loop_forever()
 
     except KeyboardInterrupt:
-        print("Releasing Memory, please wait!")
+        print("Stopping, please wait...")
 
     finally:
-        LLM.release()
+
+        # Deallocate memory for LLM once program is terminated
+        if LOCAL_ONLY:
+            LLM.release()
     
 if __name__ == '__main__':
     main()
+
