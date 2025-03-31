@@ -15,8 +15,8 @@ AUDIO_DEVICE = -1  # Default device
 FRAME_LENGTH = 512
 TIMEOUT = 10 # In seconds
 MQTT_BROKER_LOCAL = '192.168.68.75'
-MQTT_BROKER_TAILSCALE = ''
-MQTT_LOCAL_MODE = True
+MQTT_BROKER_TAILSCALE = '100.71.116.35'
+MQTT_LOCAL_MODE = False
 MQTT_TOPIC = 'pi/transcript'
 
 # ----------------- Button Setup ------------------
