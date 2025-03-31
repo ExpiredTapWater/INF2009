@@ -5,13 +5,12 @@ import paho.mqtt.client as mqtt
 nlp = spacy.load("en_core_web_sm")
 
 # MQTT settings
-MQTT_BROKER = "localhost"       # Replace with your broker IP if not local
+MQTT_BROKER = "localhost"
 MQTT_PORT = 1883
 MQTT_TOPIC = "pi/transcript"
 
 # Called when client connects to the broker
 def on_connect(client, userdata, flags, rc):
-    print("Connected to MQTT broker with result code", rc)
     client.subscribe(MQTT_TOPIC)
 
 # Called when a message is received
@@ -36,15 +35,21 @@ def on_message(client, userdata, msg):
         print("Extracted:", person_to_message)
     else:
         print("No person detected.")
+        
+def main():
+    
+    print("Setting up MQTT...")
 
+    # Set up MQTT client
+    client = mqtt.Client()
+    client.on_connect = on_connect
+    client.on_message = on_message
 
-# Set up MQTT client
-client = mqtt.Client()
-client.on_connect = on_connect
-client.on_message = on_message
+    client.connect(MQTT_BROKER, MQTT_PORT, 60)
 
-client.connect(MQTT_BROKER, MQTT_PORT, 60)
-
-# Start listening loop
-print(f"Listening on topic '{MQTT_TOPIC}'...")
-client.loop_forever()
+    # Start listening loop
+    print(f"Listening on topic '{MQTT_TOPIC}'...")
+    client.loop_forever()
+    
+if __name__ == '__main__':
+    main()
