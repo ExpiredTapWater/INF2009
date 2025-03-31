@@ -114,12 +114,14 @@ if os.path.exists(CONFIG_PATH):
     
     with st.form("config_form"):
         bool_keys = ["LOCAL_ONLY", "LOCAL_TTS", "APPLY_2ND_PERSON", "HAAR", "CAPTURE"]
+        num_keys = ["VOICE_RATE", "THRESHOLD"]
         display_names = {"LOCAL_ONLY": "Local Only Mode", 
-                         "LOCAL_TTS" : "Use offline Text-To-Speech", 
-                         "APPLY_2ND_PERSON" : "Process Using LLM", 
-                         "HAAR" : "Use HAAR for Motion Detection", 
-                         "CAPTURE" : "Save Frames with Detected Motion "}
-        num_keys = ["VOICE_RATE", "HAAR_THRESHOLD"]
+                    "LOCAL_TTS" : "Use offline Text-To-Speech", 
+                    "APPLY_2ND_PERSON" : "Process Using LLM", 
+                    "HAAR" : "Use HAAR Cascade for Motion Detection", 
+                    "CAPTURE" : "Save Frames with Detected Motion",
+                    "VOICE_RATE" : "Talking Speed For Local TTS",
+                    "THRESHOLD" : "Threshold amount to be counted as motion (Default 2000)"}
 
         new_config = {}
 

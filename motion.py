@@ -9,8 +9,8 @@ from gtts import gTTS
 from picamera2 import Picamera2
 
 # --------------- Setup Environment ---------------
-HAAR = False    # True = Use Background Subtraction
-                # False = Use Haar Cascade
+HAAR = False    # True = Use Haar Cascade
+                # False =  Use Background Subtraction
 
 # SYSTEM
 DATABASE_NAME = "reminders.db"
@@ -46,10 +46,10 @@ if "LOCAL_TTS" in config:
 if "CAPTURE" in config:
     CAPTURE_ON_MOTION = config["CAPTURE"].lower() == "true"
 
-if "HAAR_THRESHOLD" in config:
-    THRESHOLD = int(config["HAAR_THRESHOLD"])
+if "THRESHOLD" in config:
+    THRESHOLD = int(config["THRESHOLD"])
 
-if "HAAR_THRESHOLD" in config:
+if "VOICE_RATE" in config:
     VOICE_RATE = int(config["VOICE_RATE"])
 
 
@@ -137,7 +137,30 @@ time.sleep(2)
 
 def HAAR_detection():
     print("Detection Using: HAAR Cascade")
-    pass
+    
+    while True:
+        frame = picam2.capture_array()
+        gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+
+        # Detect faces
+        faces = face_cascade.detectMultiScale(
+            gray,
+            scaleFactor=1.1,
+            minNeighbors=4,
+            minSize=(40, 40)
+        )
+
+        if len(faces) > 0:
+            print(f"👤 Detected {len(faces)} face(s)")
+            for (x, y, w, h) in faces:
+                # Optional: Draw rectangle
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+            if CAPTURE_ON_MOTION:
+                timestamp = time.strftime("%Y%m%d-%H%M%S")
+                cv2.imwrite(f"face_{timestamp}.jpg", frame)
+
+        time.sleep(DELAY)
 
 def subtractive_detection():
     print(f"Detection Using: Background Subtraction")
