@@ -17,6 +17,11 @@ PROMPT = (
     "Rewrite the sentence in second person. Respond in the following format: OUTPUT: <Text>\n"
     "{TEXT}"
 )
+PROMPT = (
+    "Rewrite the following instruction so it directly addresses the person involved, using 'you' instead of their name. "
+    "Make the sentence sound natural and conversational. Respond in this format: OUTPUT: <Text>\n"
+    "{TEXT}"
+)
 #""
 
 # Called when client connects to the broker
@@ -39,7 +44,7 @@ def on_message(client, userdata, msg):
             person_to_message[name] = text
 
     # Manually check for the word "me"
-    if "me" in text.lower():
+    if re.search(r'\bme\b', text, re.IGNORECASE):
         person_to_message["me"] = text
 
     if person_to_message:
@@ -52,7 +57,7 @@ def on_message(client, userdata, msg):
     response = LLM.generate(prompt=formatted_prompt,
                             completion_token_limit=64,
                             stop_phrases=["<|endoftext|>", "###"])
-    print(response.completion)
+    #print(response.completion)
 
     cleaned = response.completion.replace("<|endoftext|>", "").replace("<|assistant|>", "")
     cleaned = cleaned.replace("\n", " ").strip()  # Remove newlines and trim
