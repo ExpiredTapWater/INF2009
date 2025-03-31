@@ -86,10 +86,17 @@ def load_LLM():
 
 def main():
 
-    load_spacy()
-    load_LLM()
-    MQTT = load_MQTT()
-    MQTT.loop_forever()
+    try:
+        load_spacy()
+        load_LLM()
+        MQTT = load_MQTT()
+        MQTT.loop_forever()
+
+    except KeyboardInterrupt:
+        print("Stopping...")
+
+    finally:
+        LLM.release()
     
 if __name__ == '__main__':
     main()
