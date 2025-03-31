@@ -152,8 +152,10 @@ def subtractive_detection():
         gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
 
+        # Initialize background frame once
         if first_frame is None:
             first_frame = gray
+            last_update_time = time.time()
             print("Background Frame Initialized, Starting...")
             continue
 
@@ -170,7 +172,6 @@ def subtractive_detection():
             motion_detected = True
             break
 
-        # If motion detected, handle reminder and optional capture
         if motion_detected:
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
             print(f"Motion detected at {timestamp}")
@@ -191,13 +192,12 @@ def subtractive_detection():
             if CAPTURE_ON_MOTION:
                 cv2.imwrite(f"motion_{timestamp}.jpg", frame)
 
-        # If no motion detected, update the background frame every update_interval seconds
-        else:
-            current_time = time.time()
-            if current_time - last_update_time > update_interval:
-                first_frame = gray
-                last_update_time = current_time
-                print("Background frame updated.")
+        # Always update the background frame after a fixed interval
+        current_time = time.time()
+        if current_time - last_update_time > update_interval:
+            first_frame = gray
+            last_update_time = current_time
+            print("Background frame updated.")
 
         time.sleep(DELAY)
 
