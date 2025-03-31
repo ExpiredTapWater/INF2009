@@ -77,7 +77,7 @@ def setup_cheetah():
 
     print("Initializing Cheetah")
     cheetah = create(access_key=KEY,
-                     endpoint_duration_sec=1,
+                     endpoint_duration_sec=0.1,
                      enable_automatic_punctuation=False)
     print("Cheetah Ready")
     
