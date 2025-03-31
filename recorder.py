@@ -178,7 +178,7 @@ def main():
                         break
 
     except KeyboardInterrupt:
-        print("Stopping...")
+        print("Releasing Memory, please wait!")
 
     finally:
         porcupine.delete()

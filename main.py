@@ -102,7 +102,7 @@ def main():
         MQTT.loop_forever()
 
     except KeyboardInterrupt:
-        print("Stopping...")
+        print("Releasing Memory, please wait!")
 
     finally:
         LLM.release()
