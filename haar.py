@@ -29,4 +29,4 @@ while True:
         # timestamp = time.strftime("%Y%m%d-%H%M%S")
         # cv2.imwrite(f"person_{timestamp}.jpg", frame)
 
-    time.sleep(1)
+    time.sleep(0.1)
