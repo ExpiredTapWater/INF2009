@@ -1,6 +1,8 @@
 # ----------------- Import Stuff ------------------
+import os
 import cv2
 import time
+import gTTS
 import pyttsx3
 import sqlite3
 import datetime
@@ -13,6 +15,7 @@ HAAR = False    # True = Use Background Subtraction
 # SYSTEM
 DATABASE_NAME = "reminders.db"
 first_frame = None
+LOCAL_ONLY = False
 
 # Text-To-Speech
 VOICE_RATE = 150
@@ -36,6 +39,10 @@ with open("config.txt") as f:
 if "HAAR" in config:
     HAAR = config["HAAR"].lower() == "true"
 
+if "LOCAL_ONLY" in config:
+    LOCAL_ONLY = config["LOCAL_ONLY"].lower() == "true"
+    print(f"Local Only Mode: {LOCAL_ONLY}")
+
 if "CAPTURE" in config:
     CAPTURE_ON_MOTION = config["CAPTURE"].lower() == "true"
 
@@ -50,6 +57,11 @@ if "HAAR_THRESHOLD" in config:
 engine = pyttsx3.init()
 engine.setProperty('rate', VOICE_RATE) # Speed
 engine.setProperty('volume', 1.0)      # Max Volume
+
+def use_gTTS(text):
+    tts = gTTS(text=text, lang='en')
+    tts.save("gTTS.mp3")
+    os.system("mpg123 gTTS.mp3")
 
 #--------------- Database Functions ---------------
 def create_table():
@@ -97,7 +109,7 @@ def get_reminder():
             }
             return reminder
         else:
-            print("No reminder found.")
+            print("No reminder found")
             return None
 
     except Exception as e:
@@ -171,12 +183,18 @@ def subtractive_detection():
                     break
 
                 if reminder["Modified_Text"]:
-                    engine.say(reminder["Modified_Text"])
-                    engine.runAndWait()
+                    if LOCAL_ONLY:
+                        engine.say(reminder["Modified_Text"])
+                        engine.runAndWait()
+                    else:
+                        use_gTTS(reminder["Modified_Text"])
 
                 elif reminder["Text"]:
-                    engine.say(reminder["Text"])
-                    engine.runAndWait()
+                    if LOCAL_ONLY:
+                        engine.say(reminder["Text"])
+                        engine.runAndWait()
+                    else:
+                        use_gTTS(reminder["Text"])
 
             if CAPTURE_ON_MOTION:
                 cv2.imwrite(f"motion_{timestamp}.jpg", frame)
