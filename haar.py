@@ -31,7 +31,7 @@ while True:
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
         # Optional: save frame
-        # timestamp = time.strftime("%Y%m%d-%H%M%S")
-        # cv2.imwrite(f"person_{timestamp}.jpg", frame)
+        timestamp = time.strftime("%Y%m%d-%H%M%S")
+        cv2.imwrite(f"person_{timestamp}.jpg", frame)
 
-    time.sleep(0.1)
+    time.sleep(0.5)
