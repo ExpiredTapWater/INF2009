@@ -64,6 +64,9 @@ def create_table():
 
 # Retrieve the last inserted reminder:
 def get_reminder():
+    
+    global first_frame
+
     conn = sqlite3.connect(DATABASE_NAME)
     cursor = conn.cursor()
 
@@ -178,7 +181,7 @@ def main():
             HAAR_detection()
         else:
             subtractive_detection()
-            
+
     except KeyboardInterrupt:
         print("Stopping, please wait...")
 
