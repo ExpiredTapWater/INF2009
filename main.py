@@ -14,7 +14,7 @@ KEY = os.getenv("PICOVOICE_KEY")
 NLP = None
 LLM = None
 PROMPT = (
-    "Rewrite the sentence as though you are talking to the other person If needed. Only output the rewritten sentence:\n"
+    "Rewrite the sentence in present tense. Only output the rewritten sentence:\n"
     "{TEXT}"
 )
 #"Rewrite the sentence in second person. Only output the rewritten sentence:\n"
