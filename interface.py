@@ -132,7 +132,8 @@ if os.path.exists(CONFIG_PATH):
 
         for key in num_keys:
             current_value = int(config.get(key, "0"))
-            new_config[key] = st.number_input(key, value=current_value)
+            display = display_names.get(key, "false")
+            new_config[key] = st.number_input(display, value=current_value)
 
         if st.form_submit_button("Save Config"):
             # Convert booleans to "true"/"false"
