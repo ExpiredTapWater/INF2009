@@ -1,7 +1,11 @@
 import streamlit as st
 import sqlite3
+import os
 
 DATABASE_NAME = "reminders.db"
+CONFIG_PATH = "config.txt"
+
+# --- Reminder DB Functions ---
 
 def create_table():
     conn = sqlite3.connect(DATABASE_NAME)
@@ -47,13 +51,30 @@ def delete_reminder(reminder_id):
     conn.commit()
     conn.close()
 
-# ------------------ Streamlit UI ------------------
+# --- Config Handling ---
+
+def read_config(filepath):
+    config = {}
+    with open(filepath, "r") as f:
+        for line in f:
+            if "=" in line:
+                key, value = line.strip().split("=", 1)
+                config[key.strip()] = value.strip()
+    return config
+
+def write_config(filepath, config_dict):
+    with open(filepath, "w") as f:
+        for key, value in config_dict.items():
+            f.write(f"{key} = {value}\n")
+
+# --- Streamlit UI ---
 
 st.set_page_config(page_title="Reminder Manager", layout="wide")
 st.title("Reminder Manager")
 
 create_table()
 
+# --- Reminder Input ---
 st.subheader("Add a New Reminder")
 with st.form("reminder_form"):
     cols = st.columns(3)
@@ -66,9 +87,9 @@ with st.form("reminder_form"):
         insert_reminder(new_reminder)
         st.rerun()
 
+# --- Display Reminders ---
 st.subheader("Current Reminders")
 reminders = get_all_reminders()
-
 if reminders:
     for reminder in reminders:
         id_, name, text, modified_text = reminder
@@ -85,3 +106,30 @@ if reminders:
                 st.rerun()
 else:
     st.info("No reminders found.")
+
+# --- Config Editor ---
+st.subheader("Configuration Settings")
+if os.path.exists(CONFIG_PATH):
+    config = read_config(CONFIG_PATH)
+    
+    with st.form("config_form"):
+        bool_keys = ["LOCAL_ONLY", "LOCAL_TTS", "APPLY_2ND_PERSON", "HAAR", "CAPTURE"]
+        num_keys = ["VOICE_RATE", "HAAR_THRESHOLD"]
+
+        new_config = {}
+
+        for key in bool_keys:
+            current_value = config.get(key, "false").lower() == "true"
+            new_config[key] = st.checkbox(key, value=current_value)
+
+        for key in num_keys:
+            current_value = int(config.get(key, "0"))
+            new_config[key] = st.number_input(key, value=current_value)
+
+        if st.form_submit_button("Save Config"):
+            # Convert booleans to "true"/"false"
+            final_config = {k: ("true" if v else "false") if k in bool_keys else str(v) for k, v in new_config.items()}
+            write_config(CONFIG_PATH, final_config)
+            st.success("Configuration saved.")
+else:
+    st.error(f"Config file not found at {CONFIG_PATH}")
