@@ -32,7 +32,7 @@ while True:
 
     motion_detected = False
     for contour in contours:
-        if cv2.contourArea(contour) < 500:
+        if cv2.contourArea(contour) < 2000:
             continue
         motion_detected = True
         break
