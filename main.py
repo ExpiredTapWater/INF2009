@@ -50,7 +50,7 @@ def on_message(client, userdata, msg):
     else:
         print("No person detected.")
 
-    response = client.models.generate_content(
+    response = gemini.models.generate_content(
         model="gemini-2.0-flash", contents=f"Rewrite the sentence in second person: {text} Only respond with the text"
     )
     print(response.text)
