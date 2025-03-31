@@ -109,6 +109,13 @@ def load_spacy():
     print("spaCy model loaded")
     return NLP
 
+def clean_text(text):
+    cleaned = text.replace("<|endoftext|>", "").replace("<|assistant|>", "")
+    cleaned = cleaned.replace("\n", " ").strip()  # Remove newlines and trim
+    cleaned = re.sub(r"^[^a-zA-Z0-9]*", "", cleaned)  # Remove leading junk like "today?" or punctuation
+    cleaned = re.sub(r'\s+', ' ', cleaned)  # Normalize spaces
+    return cleaned
+
 # -------------- MQTT Functions -------------
 
 # Called when client connects to the broker
@@ -160,17 +167,14 @@ def on_message(client, userdata, msg):
                         stop_phrases=["<|endoftext|>", "###", "##"])
             
             # Cleanup
-            cleaned = response.completion.replace("<|endoftext|>", "").replace("<|assistant|>", "")
-            cleaned = cleaned.replace("\n", " ").strip()  # Remove newlines and trim
-            cleaned = re.sub(r"^[^a-zA-Z0-9]*", "", cleaned)  # Remove leading junk like "today?" or punctuation
-            cleaned = re.sub(r'\s+', ' ', cleaned)  # Normalize spaces
-            print("Cleaned response:", cleaned)
+            cleaned_text = clean_text(response.completion)
 
             # Save
-            reminder["Modified_Text"] = cleaned
+            reminder["Modified_Text"] = cleaned_text
             insert_reminder(reminder)
 
         else: # Use Gemini
+
             formatted_prompt = GEMINI_PROMPT.format(TEXT=text)
 
             try:
@@ -178,16 +182,14 @@ def on_message(client, userdata, msg):
                             model="gemini-2.0-flash", 
                             contents=formatted_prompt)
                 
-                reminder["Modified_Text"] = response.text
+                cleaned_text = clean_text(response.text)
+                reminder["Modified_Text"] = cleaned_text
 
             except Exception as e:
                 print(f"Gemini generation failed: {e}")
                 reminder["Modified_Text"] = ""
-            
-            print("Cleaned response:", response.text)
 
             # Save
-            reminder["Modified_Text"] = response.text
             insert_reminder(reminder)
 
 
