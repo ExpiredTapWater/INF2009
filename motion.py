@@ -15,7 +15,7 @@ DATABASE_NAME = "reminders.db"
 first_frame = None
 
 # Text-To-Speech
-VOICE_RATE = 80
+VOICE_RATE = 125
 
 # CAMERA
 DELAY = 0.5
@@ -41,6 +41,10 @@ if "CAPTURE" in config:
 
 if "HAAR_THRESHOLD" in config:
     THRESHOLD = int(config["HAAR_THRESHOLD"])
+
+if "HAAR_THRESHOLD" in config:
+    VOICE_RATE = int(config["VOICE_RATE"])
+
 
 # ------------- Setup Text-To-Speech --------------
 engine = pyttsx3.init()
