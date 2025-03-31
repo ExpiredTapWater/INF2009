@@ -6,7 +6,7 @@ pllm = picollm.create(
     model_path='./phi2-290.pllm')
 
 print("Running")
-res = pllm.generate(prompt='Instruct: Rewrite the sentence to 2nd person "Remind John to buy dinner on his way home"\nOutput:',
+res = pllm.generate(prompt='Instruct: Rewrite the sentence to 2nd person: "Remind John to buy dinner on his way home"\nOutput:',
                     completion_token_limit=64,
-                    stop_phrases=["\n", "Instruct:", "Exercise:"])
+                    stop_phrases=["\n","Exercise:"])
 print(res.completion)
