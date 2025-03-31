@@ -14,9 +14,10 @@ KEY = os.getenv("PICOVOICE_KEY")
 NLP = None
 LLM = None
 PROMPT = (
-    "Rewrite the sentence in second person. Only output the rewritten sentence:\n"
+    "Rewrite the sentence as though you are talking to the other person. Only output the rewritten sentence:\n"
     "{TEXT}"
 )
+#"Rewrite the sentence in second person. Only output the rewritten sentence:\n"
 
 # Called when client connects to the broker
 def on_connect(client, userdata, flags, rc):
