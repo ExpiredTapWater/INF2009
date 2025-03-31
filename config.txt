@@ -1,4 +1,5 @@
 LOCAL_ONLY = false
+LOCAL_TTS = false
 APPLY_2ND_PERSON = true
 VOICE_RATE = 125
 HAAR = false

@@ -15,7 +15,7 @@ HAAR = False    # True = Use Background Subtraction
 # SYSTEM
 DATABASE_NAME = "reminders.db"
 first_frame = None
-LOCAL_ONLY = False
+LOCAL_TTS = False
 
 # Text-To-Speech
 VOICE_RATE = 150
@@ -39,9 +39,9 @@ with open("config.txt") as f:
 if "HAAR" in config:
     HAAR = config["HAAR"].lower() == "true"
 
-if "LOCAL_ONLY" in config:
-    LOCAL_ONLY = config["LOCAL_ONLY"].lower() == "true"
-    print(f"Local Only Mode: {LOCAL_ONLY}")
+if "LOCAL_TTS" in config:
+    LOCAL_TTS = config["LOCAL_TTS"].lower() == "true"
+    print(f"Local Only Mode: {LOCAL_TTS}")
 
 if "CAPTURE" in config:
     CAPTURE_ON_MOTION = config["CAPTURE"].lower() == "true"
@@ -144,6 +144,9 @@ def subtractive_detection():
 
     global first_frame
 
+    update_interval = 10  # seconds to wait before updating background
+    last_update_time = time.time()
+
     while True:
         frame = picam2.capture_array()
         gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
@@ -162,42 +165,39 @@ def subtractive_detection():
 
         motion_detected = False
         for contour in contours:
-            if cv2.contourArea(contour) < 2000:
+            if cv2.contourArea(contour) < THRESHOLD:
                 continue
             motion_detected = True
             break
-        
-        # Motion is detected
+
+        # If motion detected, handle reminder and optional capture
         if motion_detected:
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
             print(f"Motion detected at {timestamp}")
 
-            # Loop through all saved recordings
             while True:
-                
-                # Retrieve reminder froms database
                 reminder = get_reminder()
-
-                # Break the loop if database is empty
                 if reminder is None:
                     break
 
-                if reminder["Modified_Text"]:
-                    if LOCAL_ONLY:
-                        engine.say(reminder["Modified_Text"])
+                text = reminder.get("Modified_Text") or reminder.get("Text")
+                if text:
+                    if LOCAL_TTS:
+                        engine.say(text)
                         engine.runAndWait()
                     else:
-                        use_gTTS(reminder["Modified_Text"])
-
-                elif reminder["Text"]:
-                    if LOCAL_ONLY:
-                        engine.say(reminder["Text"])
-                        engine.runAndWait()
-                    else:
-                        use_gTTS(reminder["Text"])
+                        use_gTTS(text)
 
             if CAPTURE_ON_MOTION:
                 cv2.imwrite(f"motion_{timestamp}.jpg", frame)
+
+        # If no motion detected, update the background frame every update_interval seconds
+        else:
+            current_time = time.time()
+            if current_time - last_update_time > update_interval:
+                first_frame = gray
+                last_update_time = current_time
+                print("Background frame updated.")
 
         time.sleep(DELAY)
 
