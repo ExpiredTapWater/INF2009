@@ -51,31 +51,42 @@ def delete_reminder(reminder_id):
 
 # ------------------ Streamlit UI ------------------
 
+st.set_page_config(page_title="Reminder Manager", layout="wide")
 st.title("📝 Reminder Manager")
 
 # Create the table if it doesn't exist
 create_table()
 
 # Form to add a new reminder
-st.subheader("Add a New Reminder")
+st.subheader("➕ Add a New Reminder")
 with st.form("reminder_form"):
-    name = st.text_input("Name")
-    text = st.text_input("Text")
-    modified_text = st.text_input("Modified Text")
+    cols = st.columns(3)
+    name = cols[0].text_input("Name")
+    text = cols[1].text_input("Text")
+    modified_text = cols[2].text_input("Modified Text")
     submitted = st.form_submit_button("Add Reminder")
     if submitted:
         new_reminder = {"Name": name, "Text": text, "Modified_Text": modified_text}
         insert_reminder(new_reminder)
+        st.rerun()
 
 # Display current reminders
-st.subheader("Current Reminders")
+st.subheader("📋 Current Reminders")
 reminders = get_all_reminders()
 
 if reminders:
     for reminder in reminders:
-        st.write(f"**ID**: {reminder[0]} | **Name**: {reminder[1]} | **Text**: {reminder[2]} | **Modified**: {reminder[3]}")
-        if st.button(f"Delete ID {reminder[0]}", key=reminder[0]):
-            delete_reminder(reminder[0])
-            st.rerun()
+        id_, name, text, modified_text = reminder
+        cols = st.columns([4, 4, 4, 1])  # Last column for the delete button
+        with cols[0]:
+            st.markdown(f"**ID**: {id_}<br>**Name**: {name}", unsafe_allow_html=True)
+        with cols[1]:
+            st.markdown(f"**Text**: {text}", unsafe_allow_html=True)
+        with cols[2]:
+            st.markdown(f"**Modified**: {modified_text}", unsafe_allow_html=True)
+        with cols[3]:
+            if st.button("🗑️ Delete", key=f"delete_{id_}"):
+                delete_reminder(id_)
+                st.rerun()
 else:
     st.info("No reminders found.")
