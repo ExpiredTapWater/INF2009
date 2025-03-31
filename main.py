@@ -21,6 +21,11 @@ PROMPT = (
     "Rewrite the following instruction so it directly addresses the person involved, using 'you' instead of their name. Keep the sentence short. Respond in this format: OUTPUT: <Text>\n"
     "{TEXT}"
 )
+PROMPT = (
+    "Rewrite the following instruction so that it directly addresses the person using second-person pronouns (you, your), "
+    "and sounds natural and conversational. Only respond with the revised sentence, prefixed by 'OUTPUT:'.\n\n"
+    "{TEXT}"
+)
 #""
 
 # Called when client connects to the broker
@@ -55,7 +60,7 @@ def on_message(client, userdata, msg):
     formatted_prompt = PROMPT.format(TEXT=text)
     response = LLM.generate(prompt=formatted_prompt,
                             completion_token_limit=64,
-                            stop_phrases=["<|endoftext|>", "###"])
+                            stop_phrases=["<|endoftext|>", "###", "##"])
     #print(response.completion)
 
     cleaned = response.completion.replace("<|endoftext|>", "").replace("<|assistant|>", "")
