@@ -125,14 +125,17 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
 
     global NLP
+    reminder = {"Name" : "",           # Identified Target
+                "Text" : "",            # Contents of reminder
+                "Modified_Text" : ""}   # 2nd Person modification
 
     # Decode MQTT message
     text = msg.payload.decode("utf-8")
 
+    # Save original MQTT
+    reminder["Text"] = text
+
     doc = NLP(text)
-    reminder = {"Name" : "",            # Identified Target
-                "Text" : "",            # Contents of reminder
-                "Modified_Text" : ""}   # 2nd Person modification
 
     # Check for "me" first as a priority
     if re.search(r'\bme\b', text, re.IGNORECASE):
