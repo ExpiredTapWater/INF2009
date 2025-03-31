@@ -1,15 +1,18 @@
+# ----------------- Import Stuff ------------------
 import os
-#import picollm
+import picollm
 import spacy
 import paho.mqtt.client as mqtt
 
-# MQTT settings
+# --------------- Setup Environment ---------------
 MQTT_BROKER = "localhost"
 MQTT_PORT = 1883
 MQTT_TOPIC = "pi/transcript"
-
-# Global NLP
+LLM_PATH = "./phi2-290.pllm"
+KEY = os.getenv("PICOVOICE_KEY")
 NLP = None
+LLM = None
+SYS_PROMPT = "Rewrite messages to be from the recipient perspective."
 
 # Called when client connects to the broker
 def on_connect(client, userdata, flags, rc):
@@ -40,6 +43,14 @@ def on_message(client, userdata, msg):
     else:
         print("No person detected.")
 
+    # TEST CODE
+    response = LLM.generate(
+    system_prompt="You are a text converter that rewrites any first-person sentence into third-person.",
+    prompt=text
+    )
+
+    print(response.completion)
+
 # Load spaCy model
 def load_spacy():
 
@@ -49,6 +60,7 @@ def load_spacy():
     print("spaCy model loaded")
     return NLP
 
+# Setup MQTT
 def load_MQTT():
 
     # Set up MQTT client
@@ -63,10 +75,22 @@ def load_MQTT():
 
     return client
 
+def load_LLM():
+
+    global LLM
+    print(f"Loading LLM from: {LLM_PATH}")
+
+    LLM = picollm.create(
+    access_key=KEY,
+    model_path=LLM_PATH
+    )
+
+    print("Model Loaded")
 
 def main():
 
     load_spacy()
+    load_LLM()
     MQTT = load_MQTT()
     MQTT.loop_forever()
     
