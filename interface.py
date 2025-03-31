@@ -76,6 +76,6 @@ if reminders:
         st.write(f"**ID**: {reminder[0]} | **Name**: {reminder[1]} | **Text**: {reminder[2]} | **Modified**: {reminder[3]}")
         if st.button(f"Delete ID {reminder[0]}", key=reminder[0]):
             delete_reminder(reminder[0])
-            st.experimental_rerun()
+            st.rerun()
 else:
     st.info("No reminders found.")
