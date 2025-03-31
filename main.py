@@ -204,7 +204,7 @@ def main():
     try:
         create_table()
         load_spacy()
-        load_LLM()
+        load_LLM(LOCAL_ONLY)
         MQTT = load_MQTT()
         MQTT.loop_forever()
 
