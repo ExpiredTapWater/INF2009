@@ -108,7 +108,7 @@
     - `pip install picollm`
     - `pip install gTTS`
     - `sudo apt install mpg123`
-
+    - `pip install streamlit`
 
 ### Github Authentication Setup (During development only)
 We'll need to create SSH keys in order to clone our private repo
@@ -139,3 +139,34 @@ We'll need to create SSH keys in order to clone our private repo
 - `sudo tailscale up`
 - Verify with: `sudo systemctl status tailscaled`
     - It will run on boot
+
+### Connecting to Hotspot (For Demo Day)
+1. Enable hotspot
+2. `nmcli dev wifi list` and check that the device is seen
+3. `nmcli dev wifi connect "Your_iPhone_SSID" password "Your_Hotspot_Password"`
+    - SSH will hang as the connection will be lost once it switches over
+4. SSH back using the IP address found on the tailscale admin portal
+    - For refernce (IP is fixed, and only accessible when connected to VPN): 
+        ```
+        Pi4: 100.71.116.35
+        PiZero: 100.109.253.38
+        ```
+5. Set Hotspot priority higher for testing:
+    - `nmcli connection modify "Your_iPhone_SSID" connection.autoconnect-priority 10`
+    - `nmcli connection modify "Your_Home_SSID" connection.autoconnect-priority 5`
+
+### General Sequence of running
+1. SSH In
+2. Activate virtual environment: `inf2009` (Assuming alias is setup)
+3. Change to project directory: `cd INF2009`
+4. Run the scripts:
+    - Recorder Unit: `python recorder.py`
+    - Processing Unit: 
+        1. `python receiver.py & python motion.py`
+            - motion runs as a background task. Take note of UID and use `kill <id>` when done (Or use `htop`)
+        2. `streamlit run interface.py`
+        
+### Other Notes
+- For recorder unit:
+    - For some reason tailcale cannot resolve DNS? Might be a configuration issue on my side because
+    `sudo tailscale up --accept-dns=false` resolves the issue
