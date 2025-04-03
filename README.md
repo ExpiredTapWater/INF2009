@@ -163,7 +163,7 @@ We'll need to create SSH keys in order to clone our private repo
     - Recorder Unit: `python recorder.py`
     - Processing Unit: 
         1. `python receiver.py & python motion.py`
-            - motion runs as a background task. Take note of UID and use `kill <id>` when done (Or use `htop`)
+            - receiver.py runs as a background task. Take note of UID and use `kill <id>` when done (Or use `htop`)
         2. `streamlit run interface.py`
         
 ### Other Notes
